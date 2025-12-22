@@ -4,30 +4,27 @@ import { FileText, Users, BookOpen, LayoutDashboard } from 'lucide-react';
 
 // ページコンポーネントをインポート
 import WeeklyReflection from './pages/WeeklyReflection';
-// 新しいモックを追加する場合はここにインポートを追加
-// import TeacherDashboard from './pages/TeacherDashboard';
-// import StudentPortfolio from './pages/StudentPortfolio';
+import TeacherDashboard from './pages/TeacherDashboard';
 
 // トップページ（デモ一覧）
 function Home() {
   const demos = [
     {
       id: 'weekly-reflection',
-      title: '単元振り返り',
+      title: '単元振り返り（児童用）',
       description: '理科「磁石の実験」の単元振り返りシート。児童が学習を振り返り、AIコメントを受け取る機能のデモ。',
       icon: BookOpen,
       path: '/weekly-reflection',
-      status: 'ready', // ready, wip, planned
+      status: 'ready',
     },
-    // 新しいモックを追加する場合はここに追加
-    // {
-    //   id: 'teacher-dashboard',
-    //   title: '教師ダッシュボード',
-    //   description: 'クラス全体の学習進捗を一覧表示する教師向け画面。',
-    //   icon: LayoutDashboard,
-    //   path: '/teacher-dashboard',
-    //   status: 'planned',
-    // },
+    {
+      id: 'teacher-dashboard',
+      title: '単元振り返り（先生用）',
+      description: 'クラス全体の振り返り状況を確認し、生徒へコメントを送信できる教師向けダッシュボード。',
+      icon: LayoutDashboard,
+      path: '/teacher-dashboard',
+      status: 'ready',
+    },
   ];
 
   return (
@@ -119,9 +116,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/weekly-reflection" element={<WeeklyReflection />} />
-        {/* 新しいモックを追加する場合はここにRouteを追加 */}
-        {/* <Route path="/teacher-dashboard" element={<TeacherDashboard />} /> */}
-        {/* <Route path="/student-portfolio" element={<StudentPortfolio />} /> */}
+        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
       </Routes>
     </BrowserRouter>
   );
