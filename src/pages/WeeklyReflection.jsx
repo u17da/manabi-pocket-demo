@@ -365,11 +365,22 @@ export default function WeeklyReflection() {
           <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-green-200">
             <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
               <span className="text-2xl">🎯</span>
-              単元の目標
+              {customGoal && customGoal !== unitInfo.goal ? '自分の目標' : '単元の目標'}
             </h2>
             <div className="bg-white rounded-xl p-4 shadow-sm">
               <p className="text-gray-700 leading-relaxed font-medium">{displayGoal}</p>
             </div>
+            
+            {/* 編集後に先生の目標を表示 */}
+            {customGoal && customGoal !== unitInfo.goal && (
+              <div className="mt-4 bg-blue-50 rounded-xl p-4 border border-blue-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">👨‍🏫</span>
+                  <span className="text-sm font-semibold text-blue-700">先生が設定した目標</span>
+                </div>
+                <p className="text-gray-600 text-sm leading-relaxed">{unitInfo.goal}</p>
+              </div>
+            )}
           </div>
 
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
@@ -757,7 +768,7 @@ export default function WeeklyReflection() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                   <span className="text-2xl">🎯</span>
-                  単元の目標
+                  {customGoal && customGoal !== unitInfo.goal ? '自分の目標' : '単元の目標'}
                 </h2>
                 {!isEditingGoal ? (
                   <button
@@ -789,6 +800,17 @@ export default function WeeklyReflection() {
                   />
                 )}
               </div>
+              
+              {/* 編集後に先生の目標を表示 */}
+              {customGoal && customGoal !== unitInfo.goal && !isEditingGoal && (
+                <div className="mt-4 bg-blue-50 rounded-xl p-4 border border-blue-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">👨‍🏫</span>
+                    <span className="text-sm font-semibold text-blue-700">先生が設定した目標</span>
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed">{unitInfo.goal}</p>
+                </div>
+              )}
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
