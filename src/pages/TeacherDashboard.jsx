@@ -87,259 +87,515 @@ export default function TeacherDashboard() {
     <div onClick={onClick} className={`bg-gradient-to-br ${color} rounded-xl p-4 border-2 transition-all cursor-pointer hover:shadow-md ${active ? 'border-current shadow-md' : 'border-transparent'}`}>
       <div className="flex items-center gap-2 mb-2">
         <Icon size={20} className="text-current" />
-        <span className="font-bold text-lg">{count}</span>
+        <span className="text-sm font-bold">{label}</span>
       </div>
-      <div className="text-sm font-medium">{label}</div>
+      <div className="text-3xl font-bold">{count}人</div>
     </div>
   );
-
-  const StudentCard = ({ student, onClick }) => (
-    <div onClick={onClick} className={`bg-white rounded-xl p-4 border-2 transition-all cursor-pointer hover:shadow-md ${student.status === 'submitted' ? 'border-green-200 hover:border-green-400' : 'border-orange-200 hover:border-orange-400'}`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className="font-bold text-gray-800">{student.name}</span>
-        {student.status === 'submitted' ? (
-          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1"><CheckCircle2 size={12} />提出済</span>
-        ) : (
-          <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full flex items-center gap-1"><Clock size={12} />未提出</span>
-        )}
-      </div>
-      {student.status === 'submitted' && (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            {student.hasTeacherComment || teacherComments[student.id] ? (
-              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full flex items-center gap-1"><MessageSquare size={12} />コメント済</span>
-            ) : (
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full flex items-center gap-1"><AlertCircle size={12} />未コメント</span>
-            )}
-          </div>
-          {student.bestShot && <Camera size={16} className="text-blue-400" />}
-        </div>
-      )}
-    </div>
-  );
-
-  // 生徒詳細モーダル
-  if (selectedStudent) {
-    const student = students.find(s => s.id === selectedStudent);
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">{student.name} さんの振り返り</h2>
-              <button onClick={() => setSelectedStudent(null)} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
-            </div>
-
-            {student.status === 'notSubmitted' ? (
-              <div className="text-center py-12">
-                <Clock size={48} className="mx-auto text-orange-400 mb-4" />
-                <p className="text-lg text-gray-600">まだ振り返りが提出されていません</p>
-              </div>
-            ) : (
-              <>
-                <div className="bg-gray-50 rounded-xl p-4 mb-6">
-                  <h3 className="text-sm font-bold text-gray-700 mb-3">学習の推移</h3>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <LineChart data={student.chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                      <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 12 }} />
-                      <YAxis domain={[0, 5]} ticks={[1,2,3,4,5]} tick={{ fill: '#6b7280', fontSize: 12 }} />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="enjoyment" name="たのしかった" stroke="#ec4899" strokeWidth={2} dot={{ r: 4 }} />
-                      <Line type="monotone" dataKey="understanding" name="わかった" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-
-                {student.bestShot && (
-                  <div className="mb-6">
-                    <h3 className="text-sm font-bold text-gray-700 mb-2">ベストショット</h3>
-                    <div className="inline-block rounded-xl overflow-hidden border-4 border-yellow-400" style={{ width: '200px', aspectRatio: '4/3' }}>
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50 p-4">
-                        <Camera className="w-12 h-12 text-yellow-400 mb-2" />
-                        <div className="text-sm text-gray-700 font-semibold text-center">{student.bestShot.photoName}</div>
-                        <div className="text-xs text-gray-500">第{student.bestShot.lessonNumber}回</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="space-y-4 mb-6">
-                  <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200">
-                    <div className="text-sm font-semibold text-gray-700 mb-2">振り返り</div>
-                    <p className="text-gray-700">{student.reflection}</p>
-                  </div>
-
-                  <div className="bg-purple-50 rounded-xl p-4 border-2 border-purple-200">
-                    <div className="text-sm font-semibold text-gray-700 mb-2">AIコメント</div>
-                    <p className="text-gray-700">{student.aiComment}</p>
-                  </div>
-
-                  {student.nextAction && (
-                    <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-200">
-                      <div className="text-sm font-semibold text-gray-700 mb-2">次に活かしたいこと</div>
-                      <p className="text-gray-700">{student.nextAction}</p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="bg-orange-50 rounded-xl p-4 border-2 border-orange-200">
-                  <div className="text-sm font-semibold text-gray-700 mb-2">先生からのコメント</div>
-                  {teacherComments[student.id] || student.hasTeacherComment ? (
-                    <p className="text-gray-700">{teacherComments[student.id] || "コメント済み"}</p>
-                  ) : (
-                    <div>
-                      <textarea value={tempComment} onChange={(e) => setTempComment(e.target.value)} placeholder="コメントを入力..." className="w-full border-2 border-gray-200 rounded-lg p-3 mb-2 focus:border-orange-400 focus:outline-none" rows={3} />
-                      <button onClick={() => handleSendComment(student.id)} disabled={!tempComment.trim()} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${tempComment.trim() ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
-                        <Send size={16} />送信
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* ヘッダー */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg p-6 mb-6 text-white">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
-              <div className="text-4xl">{unitInfo.icon}</div>
-              <div>
-                <div className="text-sm opacity-90">{unitInfo.subject} - {unitInfo.grade}</div>
-                <h1 className="text-2xl font-bold">{unitInfo.title}</h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link to="/" className="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg text-sm font-semibold">
-                <Home size={16} />
-                トップへ
-              </Link>
-            </div>
-          </div>
-          <p className="text-sm opacity-90">{unitInfo.period}</p>
-        </div>
-
-        {/* ナビゲーションタブ */}
-        <div className="flex gap-2 mb-6">
-          <button onClick={() => setCurrentPage('dashboard')} className={`px-6 py-3 rounded-xl font-bold transition-all ${currentPage === 'dashboard' ? 'bg-blue-600 text-white shadow-lg' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
-            <Users size={18} className="inline mr-2" />生徒一覧
-          </button>
-          <button onClick={() => setCurrentPage('lessons')} className={`px-6 py-3 rounded-xl font-bold transition-all ${currentPage === 'lessons' ? 'bg-blue-600 text-white shadow-lg' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
-            📚 授業記録
-          </button>
-        </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <div className="max-w-7xl mx-auto p-4 md:p-6">
         {currentPage === 'dashboard' ? (
           <>
-            {/* 単元目標 */}
-            <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-green-200">
-              <div className="flex items-center justify-between mb-3">
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-4xl">{unitInfo.icon}</span>
+                <h1 className="text-3xl font-bold text-gray-800">{unitInfo.title}</h1>
+                <button 
+                  onClick={() => setCurrentPage('analysis')}
+                  className="ml-4 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                >
+                  <span>📊</span>
+                  <span>単元の分析</span>
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                <span className="font-semibold">{unitInfo.grade}</span>
+                <span>|</span>
+                <span>{unitInfo.subject}</span>
+                <span>|</span>
+                <span>{unitInfo.period}</span>
+              </div>
+            </div>
+            <Link to="/" className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl font-semibold transition-all">
+              <Home size={18} />
+              トップへ
+            </Link>
+          </div>
+          
+          <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-green-200">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
                 <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <span className="text-2xl">🎯</span>単元の目標
+                  <span className="text-2xl">🎯</span>
+                  単元の目標
                 </h2>
-                {!isEditingGoal ? (
-                  <button onClick={() => setIsEditingGoal(true)} className="text-sm bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-lg border-2 border-gray-300">
-                    <Edit size={14} className="inline mr-1" />編集
-                  </button>
-                ) : (
-                  <div className="flex gap-2">
-                    <button onClick={() => setIsEditingGoal(false)} className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg">キャンセル</button>
-                    <button onClick={() => setIsEditingGoal(false)} className="text-sm bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg">保存</button>
-                  </div>
-                )}
+                <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                  <Users size={14} />
+                  生徒に配信されます
+                </span>
               </div>
               {!isEditingGoal ? (
-                <p className="text-gray-700 leading-relaxed">{unitGoal}</p>
+                <button
+                  onClick={() => setIsEditingGoal(true)}
+                  className="bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all shadow-sm hover:shadow-md"
+                >
+                  <Edit size={16} />
+                  <span>編集</span>
+                </button>
               ) : (
-                <textarea value={unitGoal} onChange={(e) => setUnitGoal(e.target.value)} className="w-full border-2 border-gray-200 rounded-lg p-3 focus:border-green-400 focus:outline-none" rows={3} />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setIsEditingGoal(false);
+                      alert('単元の目標を保存し、生徒に配信しました！');
+                    }}
+                    className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all shadow-md hover:shadow-lg"
+                  >
+                    <CheckCircle2 size={16} />
+                    <span>保存して配信</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setUnitGoal('磁石の性質について、実験を通して理解を深め、磁石の力や極の働きについて説明できるようになる');
+                      setIsEditingGoal(false);
+                    }}
+                    className="bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 px-4 py-2 rounded-xl font-bold transition-all"
+                  >
+                    キャンセル
+                  </button>
+                </div>
               )}
             </div>
-
-            {/* ステータスカード */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <StatusCard status="all" count={students.length} color="from-gray-100 to-gray-200 text-gray-700" icon={Users} label="全員" onClick={() => setStatusFilter(null)} active={statusFilter === null} />
-              <StatusCard status="submitted" count={counts.submitted} color="from-green-100 to-green-200 text-green-700" icon={CheckCircle2} label="提出済" onClick={() => setStatusFilter('submitted')} active={statusFilter === 'submitted'} />
-              <StatusCard status="notSubmitted" count={counts.notSubmitted} color="from-orange-100 to-orange-200 text-orange-700" icon={Clock} label="未提出" onClick={() => setStatusFilter('notSubmitted')} active={statusFilter === 'notSubmitted'} />
-              <div onClick={() => setShowOnlyNoComment(!showOnlyNoComment)} className={`bg-gradient-to-br from-purple-100 to-purple-200 text-purple-700 rounded-xl p-4 border-2 transition-all cursor-pointer hover:shadow-md ${showOnlyNoComment ? 'border-purple-500 shadow-md' : 'border-transparent'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <MessageSquare size={20} />
-                  <span className="font-bold text-lg">{students.filter(s => s.status === 'submitted' && !s.hasTeacherComment && !teacherComments[s.id]).length}</span>
-                </div>
-                <div className="text-sm font-medium">未コメント</div>
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              {isEditingGoal ? (
+                <textarea
+                  value={unitGoal}
+                  onChange={(e) => setUnitGoal(e.target.value)}
+                  className="w-full border-2 border-gray-300 rounded-xl p-3 min-h-[100px] focus:border-green-400 focus:outline-none font-medium text-gray-700"
+                  placeholder="単元の目標を入力してください"
+                />
+              ) : (
+                <p className="text-gray-700 leading-relaxed font-medium">{unitGoal}</p>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex gap-4 items-start mb-4">
+            <div className="flex-1 grid grid-cols-2 gap-4">
+              <StatusCard status="submitted" count={counts.submitted} color="from-green-50 to-emerald-50 text-green-600" icon={CheckCircle2} label="提出済み" onClick={() => setStatusFilter(statusFilter === 'submitted' ? null : 'submitted')} active={statusFilter === 'submitted'} />
+              <StatusCard status="notSubmitted" count={counts.notSubmitted} color="from-yellow-50 to-amber-50 text-yellow-600" icon={Clock} label="未提出" onClick={() => setStatusFilter(statusFilter === 'notSubmitted' ? null : 'notSubmitted')} active={statusFilter === 'notSubmitted'} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <button onClick={() => setShowBulkModal(true)} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-6 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 whitespace-nowrap">
+                <Users size={18} />
+                <span className="text-sm">一括でコメント</span>
+              </button>
+              <div className="flex items-center gap-2 text-xs bg-gray-50 rounded-lg px-3 py-2">
+                <input type="checkbox" checked={showOnlyNoComment} onChange={(e) => setShowOnlyNoComment(e.target.checked)} className="w-3.5 h-3.5 text-blue-600 rounded" />
+                <span className="text-gray-700 font-medium whitespace-nowrap">コメント未記入のみ</span>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* 一括コメントボタン */}
-            <div className="flex justify-end mb-4">
-              <button onClick={() => setShowBulkModal(true)} className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-2 px-6 rounded-xl shadow-lg flex items-center gap-2">
-                <MessageSquare size={18} />一括コメント
+        <div className="grid grid-cols-4 gap-3 mb-6">
+          {filteredStudents.map(student => {
+            const bgColor = student.status === 'submitted' ? 'from-green-50 to-emerald-50' : 'from-yellow-50 to-amber-50';
+            const borderColor = student.status === 'submitted' ? 'border-green-300 hover:border-green-400' : 'border-yellow-300 hover:border-yellow-400';
+            
+            return (
+              <div key={student.id} onClick={() => { setSelectedStudent(student); setShowStudentDetail(true); }} className={`bg-gradient-to-br ${bgColor} rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer p-4 border-2 ${borderColor}`}>
+                <h3 className="text-lg font-bold text-gray-800 mb-3">{student.name}</h3>
+                {student.bestShot ? (
+                  <div className="relative rounded-lg overflow-hidden mb-3 border-2 border-gray-200" style={{ aspectRatio: '16/9' }}>
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+                      <Camera className="w-12 h-12 text-blue-300 mb-2" />
+                      <div className="text-xs text-gray-600 font-medium text-center px-2">{student.bestShot.photoName}</div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative rounded-lg overflow-hidden mb-3 border-2 border-gray-300" style={{ aspectRatio: '16/9' }}>
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100">
+                      <Camera className="w-12 h-12 text-gray-300 mb-2" />
+                      <div className="text-xs text-gray-400 font-medium">写真なし</div>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-center justify-between">
+                  {student.hasTeacherComment ? (
+                    <div className="flex items-center gap-1 bg-green-600 text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md">
+                      <CheckCircle2 size={16} />
+                      <span>コメント済み</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-gray-400 text-sm">
+                      <MessageSquare size={16} />
+                      <span>コメントなし</span>
+                    </div>
+                  )}
+                  <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">詳細 →</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {selectedStudent && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
+            <div className="min-h-screen flex items-start justify-center p-4 py-8">
+              <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-6 my-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  {(() => {
+                    const currentIndex = filteredStudents.findIndex(s => s.id === selectedStudent.id);
+                    const hasPrev = currentIndex > 0;
+                    const hasNext = currentIndex < filteredStudents.length - 1;
+                    return (
+                      <>
+                        <button 
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            if (hasPrev) setSelectedStudent(filteredStudents[currentIndex - 1]); 
+                          }} 
+                          disabled={!hasPrev}
+                          className={`p-1.5 rounded-lg transition-all ${hasPrev ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                        >
+                          <ChevronLeft size={20} />
+                        </button>
+                        <h2 className="text-2xl font-bold text-gray-800">{selectedStudent.name}</h2>
+                        <button 
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            if (hasNext) setSelectedStudent(filteredStudents[currentIndex + 1]); 
+                          }} 
+                          disabled={!hasNext}
+                          className={`p-1.5 rounded-lg transition-all ${hasNext ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                        >
+                          <ChevronRight size={20} />
+                        </button>
+                      </>
+                    );
+                  })()}
+                </div>
+                <button onClick={() => { setSelectedStudent(null); setTempComment(''); }} className="text-gray-400 hover:text-gray-600">
+                  <X size={24} />
+                </button>
+              </div>
+
+              {(() => {
+                if (selectedStudent.status === 'notSubmitted') {
+                  return (
+                    <div>
+                      <div className="bg-yellow-50 rounded-lg p-3 text-center border border-yellow-200 mb-3">
+                        <p className="text-yellow-700 text-sm font-medium">未提出（振り返りを作成中、または未着手の状態です）</p>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <h3 className="text-base font-bold text-gray-800 mb-2">ふりかえり</h3>
+                        <ResponsiveContainer width="100%" height={150}>
+                          <LineChart data={selectedStudent.chartData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                            <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 11 }} />
+                            <YAxis domain={[0, 5]} ticks={[1,2,3,4,5]} tick={{ fill: '#6b7280', fontSize: 11 }} />
+                            <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }} />
+                            <Legend wrapperStyle={{ fontSize: '12px' }} />
+                            <Line type="monotone" dataKey="enjoyment" name="たのしかった" stroke="#ec4899" strokeWidth={2} dot={{ fill: '#ec4899', r: 3 }} />
+                            <Line type="monotone" dataKey="understanding" name="わかった/できた" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', r: 3 }} />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {selectedStudent.bestShot && (
+                        <div className="mb-4">
+                          <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
+                            <Star className="text-yellow-500" fill="#eab308" size={18} />
+                            <span>ベストショット</span>
+                          </h3>
+                          <div className="relative rounded-xl overflow-hidden border-2 border-yellow-200" style={{ aspectRatio: '16/9' }}>
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50">
+                              <Camera className="w-12 h-12 text-yellow-400 mb-2" />
+                              <div className="text-sm text-gray-700 font-semibold">{selectedStudent.bestShot.photoName}</div>
+                              <div className="text-xs text-gray-500 mt-1">第{selectedStudent.bestShot.lessonNumber}回の授業</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedStudent.selectedPhotos.length > 0 && (
+                        <div className="mb-4">
+                          <h3 className="text-base font-bold text-gray-800 mb-2">選んだ写真</h3>
+                          <div className="grid grid-cols-3 gap-3">
+                            {selectedStudent.selectedPhotos.map((photo, idx) => (
+                              <div key={idx} className="relative rounded-lg overflow-hidden border-2 border-gray-200" style={{ aspectRatio: '4/3' }}>
+                                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-2">
+                                  <Camera className="w-8 h-8 text-blue-300 mb-1" />
+                                  <div className="text-xs text-gray-600 font-medium text-center">{photo.photoName}</div>
+                                  <div className="text-xs text-gray-400 mt-1">第{photo.lessonNumber}回</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedStudent.reflection && (
+                        <div className="mb-4">
+                          <h3 className="text-base font-bold text-gray-800 mb-2">学んだこと・気づいたこと</h3>
+                          <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-3 border-2 border-green-200">
+                            <p className="text-gray-700 leading-relaxed text-sm">{selectedStudent.reflection}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedStudent.nextAction && (
+                        <div className="mb-4">
+                          <h3 className="text-base font-bold text-gray-800 mb-2">次の学びに活かしたいこと</h3>
+                          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-3 border-2 border-blue-200">
+                            <p className="text-gray-700 leading-relaxed text-sm">{selectedStudent.nextAction}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="border-t-2 border-gray-200 pt-4">
+                        <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
+                          <MessageSquare className="text-green-600" />
+                          <span>先生からのコメント</span>
+                        </h3>
+                        {teacherComments[selectedStudent.id] ? (
+                          <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200 mb-3">
+                            <p className="text-gray-700 leading-relaxed mb-3">{teacherComments[selectedStudent.id]}</p>
+                            <button onClick={() => { setTempComment(teacherComments[selectedStudent.id]); }} className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1">
+                              <Edit size={16} />
+                              <span>編集する</span>
+                            </button>
+                          </div>
+                        ) : null}
+                        <textarea value={tempComment} onChange={(e) => setTempComment(e.target.value)} placeholder="生徒へのコメントを入力してください" className="w-full border-2 border-gray-300 rounded-xl p-3 min-h-[80px] focus:border-green-400 focus:outline-none" />
+                        <button onClick={() => handleSendComment(selectedStudent.id)} disabled={!tempComment.trim()} className="mt-3 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 disabled:cursor-not-allowed">
+                          <Send size={20} />
+                          <span>コメントを送信</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <div>
+                    {selectedStudent.bestShot && (
+                      <div className="mb-4">
+                        <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
+                          <Star className="text-yellow-500" fill="#eab308" size={18} />
+                          <span>ベストショット</span>
+                        </h3>
+                        <div className="relative rounded-xl overflow-hidden border-2 border-yellow-200" style={{ aspectRatio: '16/9' }}>
+                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50">
+                            <Camera className="w-12 h-12 text-yellow-400 mb-2" />
+                            <div className="text-sm text-gray-700 font-semibold">{selectedStudent.bestShot.photoName}</div>
+                            <div className="text-xs text-gray-500 mt-1">第{selectedStudent.bestShot.lessonNumber}回の授業</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedStudent.selectedPhotos.length > 0 && (
+                      <div className="mb-4">
+                        <h3 className="text-base font-bold text-gray-800 mb-2">選んだ写真</h3>
+                        <div className="grid grid-cols-3 gap-3">
+                          {selectedStudent.selectedPhotos.map((photo, idx) => (
+                            <div key={idx} className="relative rounded-lg overflow-hidden border-2 border-gray-200" style={{ aspectRatio: '4/3' }}>
+                              <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-2">
+                                <Camera className="w-8 h-8 text-blue-300 mb-1" />
+                                <div className="text-xs text-gray-600 font-medium text-center">{photo.photoName}</div>
+                                <div className="text-xs text-gray-400 mt-1">第{photo.lessonNumber}回</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mb-4">
+                      <h3 className="text-base font-bold text-gray-800 mb-2">ふりかえり</h3>
+                      <ResponsiveContainer width="100%" height={180}>
+                        <LineChart data={selectedStudent.chartData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                          <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 11 }} />
+                          <YAxis domain={[0, 5]} ticks={[1,2,3,4,5]} tick={{ fill: '#6b7280', fontSize: 11 }} />
+                          <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }} />
+                          <Legend wrapperStyle={{ fontSize: '12px' }} />
+                          <Line type="monotone" dataKey="enjoyment" name="たのしかった" stroke="#ec4899" strokeWidth={2} dot={{ fill: '#ec4899', r: 3 }} />
+                          <Line type="monotone" dataKey="understanding" name="わかった/できた" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', r: 3 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    <div className="space-y-3 mb-4">
+                      <div>
+                        <h3 className="text-base font-bold text-gray-800 mb-2">学んだこと・気づいたこと</h3>
+                        <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-3 border-2 border-green-200">
+                          <p className="text-gray-700 leading-relaxed text-sm">{selectedStudent.reflection}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-base font-bold text-gray-800 mb-2">次の学びに活かしたいこと</h3>
+                        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-3 border-2 border-blue-200">
+                          <p className="text-gray-700 leading-relaxed text-sm">{selectedStudent.nextAction}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {selectedStudent.aiComment && (
+                      <div className="mb-4">
+                        <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
+                          <span className="text-purple-600">🤖</span>
+                          <span>AIコメント</span>
+                        </h3>
+                        <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-3 border-2 border-purple-200">
+                          <p className="text-gray-700 leading-relaxed text-sm">{selectedStudent.aiComment}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="border-t-2 border-gray-200 pt-4">
+                      <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
+                        <MessageSquare className="text-green-600" />
+                        <span>先生からのコメント</span>
+                      </h3>
+                      {teacherComments[selectedStudent.id] ? (
+                        <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200 mb-3">
+                          <p className="text-gray-700 leading-relaxed mb-3">{teacherComments[selectedStudent.id]}</p>
+                          <button onClick={() => { setTempComment(teacherComments[selectedStudent.id]); }} className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1">
+                            <Edit size={16} />
+                            <span>編集する</span>
+                          </button>
+                        </div>
+                      ) : null}
+                      <textarea value={tempComment} onChange={(e) => setTempComment(e.target.value)} placeholder="生徒へのコメントを入力してください" className="w-full border-2 border-gray-300 rounded-xl p-3 min-h-[120px] focus:border-green-400 focus:outline-none" />
+                      <button onClick={() => handleSendComment(selectedStudent.id)} disabled={!tempComment.trim()} className="mt-3 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 disabled:cursor-not-allowed">
+                        <Send size={20} />
+                        <span>コメントを送信</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+          </div>
+        )}
+
+        {showBulkModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xl font-bold text-gray-800">一括コメント</h3>
+                <button onClick={() => { setShowBulkModal(false); setSendToInProgress(false); setBulkComment(''); }} className="text-gray-400 hover:text-gray-600">
+                  <X size={24} />
+                </button>
+              </div>
+              <textarea value={bulkComment} onChange={(e) => setBulkComment(e.target.value)} placeholder="全員に送るコメントを入力" className="w-full border-2 border-gray-300 rounded-xl p-3 min-h-[120px] mb-3 focus:border-blue-400 focus:outline-none" />
+              <div className="mb-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={sendToInProgress} onChange={(e) => setSendToInProgress(e.target.checked)} className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500" />
+                  <span className="text-sm font-medium text-gray-700">作成中・未着手にも送る</span>
+                </label>
+              </div>
+              <button onClick={handleBulkComment} disabled={!bulkComment.trim()} className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:cursor-not-allowed">
+                <Send size={20} />
+                <span>送信</span>
               </button>
             </div>
-
-            {/* 生徒一覧 */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {filteredStudents.map(student => (
-                <StudentCard key={student.id} student={student} onClick={() => setSelectedStudent(student.id)} />
-              ))}
-            </div>
-
-            {/* 一括コメントモーダル */}
-            {showBulkModal && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-800">一括コメント送信</h3>
-                    <button onClick={() => setShowBulkModal(false)} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
-                  </div>
-                  <div className="mb-4">
-                    <label className="flex items-center gap-2 mb-3">
-                      <input type="checkbox" checked={sendToInProgress} onChange={(e) => setSendToInProgress(e.target.checked)} className="w-4 h-4" />
-                      <span className="text-sm text-gray-700">未提出の生徒にも送信する</span>
-                    </label>
-                    <textarea value={bulkComment} onChange={(e) => setBulkComment(e.target.value)} placeholder="全員に送信するコメントを入力..." className="w-full border-2 border-gray-200 rounded-lg p-3 focus:border-purple-400 focus:outline-none" rows={4} />
-                  </div>
-                  <div className="flex gap-3 justify-end">
-                    <button onClick={() => setShowBulkModal(false)} className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg">キャンセル</button>
-                    <button onClick={handleBulkComment} disabled={!bulkComment.trim()} className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-2 ${bulkComment.trim() ? 'bg-purple-500 hover:bg-purple-600 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
-                      <Send size={16} />送信
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+          </div>
+        )}
           </>
         ) : (
-          /* 授業記録ページ */
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <TrendingUp size={24} className="text-blue-500" />
-                クラス全体の推移
+          <div>
+            <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl shadow-lg p-6 mb-6 text-white">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setCurrentPage('dashboard')}
+                    className="bg-white bg-opacity-90 hover:bg-opacity-100 text-green-600 px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all shadow-md hover:shadow-lg"
+                  >
+                    <span>←</span>
+                    <span>戻る</span>
+                  </button>
+                  <div className="text-5xl">{unitInfo.icon}</div>
+                  <div>
+                    <div className="text-sm opacity-90 mb-1">{unitInfo.subject}　単元の振り返り</div>
+                    <h1 className="text-3xl font-bold">{unitInfo.title}</h1>
+                  </div>
+                </div>
+                <span className="text-sm bg-white bg-opacity-20 px-4 py-2 rounded-full font-semibold">
+                  全8回完了
+                </span>
+              </div>
+              <p className="text-lg opacity-90">{unitInfo.period}</p>
+            </div>
+
+            <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-green-200">
+              <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <span className="text-2xl">🎯</span>
+                単元の目標
               </h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={dates.map((date, i) => ({
-                  name: date,
-                  avgEnjoyment: students.reduce((sum, s) => sum + (s.chart[i]?.[1] || 0), 0) / students.filter(s => s.chart[i]?.[1] > 0).length || 0,
-                  avgUnderstanding: students.reduce((sum, s) => sum + (s.chart[i]?.[0] || 0), 0) / students.filter(s => s.chart[i]?.[0] > 0).length || 0
-                }))}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 12 }} />
-                  <YAxis domain={[0, 5]} ticks={[1,2,3,4,5]} tick={{ fill: '#6b7280', fontSize: 12 }} />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="avgEnjoyment" name="たのしかった（平均）" stroke="#ec4899" strokeWidth={3} dot={{ r: 5 }} />
-                  <Line type="monotone" dataKey="avgUnderstanding" name="わかった（平均）" stroke="#f59e0b" strokeWidth={3} dot={{ r: 5 }} />
-                </LineChart>
-              </ResponsiveContainer>
+              <div className="bg-white rounded-xl p-4 shadow-sm">
+                <p className="text-gray-700 leading-relaxed font-medium">{unitGoal}</p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-purple-200">
+              <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <div className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg p-2">
+                  <TrendingUp size={20} />
+                </div>
+                AIコメント
+              </h2>
+              <div className="bg-white rounded-xl p-4 shadow-sm">
+                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">この「磁石の実験」の単元では、20人の児童が8回の授業を通して、磁石の基本的な性質から応用まで幅広く学習しました。
+
+全体的な傾向として、「わかった/できた」の平均は3.8、「たのしかった」の平均は3.9と、理解度・楽しさともに高い水準を維持できました。
+
+特に第2回「磁石につくもの・つかないもの」と第6回「磁石の力がつたわるか調べよう」では、予想を立ててから実験で確かめるという科学的な学習方法が効果的に機能し、児童の「驚き」と「発見」が顕著に見られました。児童たちの振り返りには「予想と違ってびっくりした」「不思議だった」という言葉が多く、科学的な探究心が育っていることが確認できます。
+
+第4回「磁石の極を調べよう」では理解度が2.6とやや低めでしたが、第5回で実験を重ねることで4.1まで向上しており、繰り返しの学習の重要性が示されました。
+
+第7回のおもちゃ作りでは、学んだ知識を実際に活用する力が発揮され、多くの児童が創造的な作品を作り上げました。「磁石の性質を使って」という表現が振り返りに多く見られ、知識の定着と応用力の育成が確認できます。
+
+今後の課題としては、難しい概念（N極・S極など）の理解をさらに深めるための工夫と、まとめの授業での楽しさをどう維持するかが挙げられます。</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">ふりかえり（クラス平均）</h2>
+              <div className="bg-gray-50 rounded-xl p-4">
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart 
+                    data={[
+                      { name: '1/15', lessonNumber: 1, 'わかった/できた': 3.2, 'たのしかった': 3.1 },
+                      { name: '1/18', lessonNumber: 2, 'わかった/できた': 3.8, 'たのしかった': 4.2 },
+                      { name: '1/22', lessonNumber: 3, 'わかった/できた': 3.9, 'たのしかった': 4.3 },
+                      { name: '1/25', lessonNumber: 4, 'わかった/できた': 2.6, 'たのしかった': 3.2 },
+                      { name: '1/29', lessonNumber: 5, 'わかった/できた': 4.1, 'たのしかった': 4.0 },
+                      { name: '2/1', lessonNumber: 6, 'わかった/できた': 4.6, 'たのしかった': 4.7 },
+                      { name: '2/5', lessonNumber: 7, 'わかった/できた': 4.3, 'たのしかった': 4.5 },
+                      { name: '2/7', lessonNumber: 8, 'わかった/できた': 4.2, 'たのしかった': 3.3 }
+                    ]}
+                    margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 13 }} axisLine={{ stroke: '#d1d5db' }} />
+                    <YAxis domain={[0, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fill: '#6b7280', fontSize: 13 }} axisLine={{ stroke: '#d1d5db' }} />
+                    <Tooltip contentStyle={{ backgroundColor: 'white', border: '2px solid #e5e7eb', borderRadius: '8px', fontSize: '13px' }} />
+                    <Legend wrapperStyle={{ paddingTop: '10px' }} iconType="circle" />
+                    <Line type="monotone" dataKey="たのしかった" stroke="#ec4899" strokeWidth={3} dot={{ fill: '#ec4899', r: 5 }} activeDot={{ r: 7 }} cursor="pointer" />
+                    <Line type="monotone" dataKey="わかった/できた" stroke="#f59e0b" strokeWidth={3} dot={{ fill: '#f59e0b', r: 5 }} activeDot={{ r: 7 }} cursor="pointer" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
             <div className="space-y-4">
