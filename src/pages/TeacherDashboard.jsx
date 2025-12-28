@@ -16,12 +16,40 @@ export default function TeacherDashboard() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [unitGoal, setUnitGoal] = useState('磁石の性質について、実験を通して理解を深め、磁石の力や極の働きについて説明できるようになる');
+  const [showLessonFlow, setShowLessonFlow] = useState(false);
 
   const unitInfo = { title: "磁石の実験", period: "2024年1月15日 - 2月7日", subject: "理科", icon: "🔬", grade: "3年2組" };
 
   // 生徒データを圧縮形式で定義
   const studentsData = [
-    { id: 1, name: "田中 太郎", status: "submitted", chart: [[3,2],[4,5],[3,4],[2,3],[4,4],[5,5],[5,4],[5,2]], best: [2,0,"つくもの調べ①"], photos: [[2,"つくもの調べ②"],[3,"クリップ実験"],[6,"紙を通す実験"]], reflection: "磁石で色々なものがくっつくか実験するのがとても楽しかったです。最初は鉄だけかと思っていたけど、ステンレスはくっつかないものがあるのが不思議でした。N極とS極があって、同じ極だと退け合うのも面白かったです。", nextAction: "次は電気の実験でも、予想を立ててから確かめるようにしたいです。", aiComment: "実験を通して、予想と違う結果に気づけたことが素晴らしいですね。ステンレスの性質に疑問を持ったり、磁石の極について理解を深めたりと、科学的な思考が育っています。次の学習でも予想を立てる習慣を大切にしてください。", hasComment: true },
+    { 
+      id: 1, 
+      name: "田中 太郎", 
+      status: "submitted", 
+      chart: [
+        [3,2,"1月15日(月)","磁石ってなんだろう","磁石で遊んでみたけど、くっつくものとくっつかないものがあって不思議だった。鉄はくっつくのに、アルミはくっつかなくてびっくりした。","この授業では、磁石の基本的な性質を知ることができました。児童は身近なもので磁石に引きつけられるものと引きつけられないものを調べ、鉄製品が磁石に引きつけられることを発見しました。"],
+        [4,5,"1月18日(木)","磁石の極を調べよう","N極とS極があることを知った。同じ極同士は反発して、違う極同士はくっつくのが面白かった。予想を立ててから確かめるのが楽しかった。","この授業では、磁石にはN極とS極があることを学びました。児童は実験を通じて、同じ極同士は反発し、異なる極同士は引き合うという磁石の極性の法則を理解しました。"],
+        [3,4,"1月22日(月)","磁石の力","磁石の力は、離れていても働くことがわかった。紙やプラスチックを通しても引きつけることができてすごいと思った。","この授業では、磁石の力が離れていても働くことを学びました。児童は紙やプラスチックなど、様々な素材を通して磁石の力が伝わることを実験で確かめました。"],
+        [2,3,"1月25日(木)","磁石の極を調べよう","N極とS極を調べるのは難しかった。くっつくほうがS極かと思ったけど、引き合う極があることを学んだ。","この授業では、磁石の極性についてさらに深く学びました。児童は方位磁針を使って磁石のN極とS極を正確に調べる方法を習得しました。"],
+        [4,4,"1月29日(月)","磁石を作ろう","鉄のくぎを磁石でこすると、磁石になることを知った。磁石を作れるなんてすごいと思った。磁石の力が伝わるんだと思った。","この授業では、鉄製品を磁石に変える方法を学びました。児童は鉄釘を磁石でこすることで、鉄釘自体が磁石になることを実験で確認し、磁力が伝わる性質を理解しました。"],
+        [5,5,"2月1日(木)","磁石の強さを比べよう","磁石の大きさや形で、磁石の力の強さが違うことがわかった。予想を立ててから調べるのが楽しかった。いろいろな磁石を比べられて面白かった。","この授業では、異なる大きさや形状の磁石の強さを比較しました。児童はクリップの数を数えることで磁力の強さを定量的に測定し、磁石の大きさと磁力の関係について考察しました。"],
+        [5,4,"2月5日(月)","磁石を使って遊ぼう","磁石を使って魚釣りゲームを作った。磁石の性質を使って遊べることがわかった。極の性質を考えながら作るのが楽しかった。","この授業では、これまで学んだ磁石の性質を活かして魚釣りゲームを作りました。児童は磁石のN極とS極の性質を理解し、それを応用した遊び道具を創造的に作り上げました。"],
+        [5,2,"2月7日(水)","まとめ","8回の授業を振り返って、磁石についてたくさん学べたと思う。最初はよくわからなかったけど、今は磁石の性質がよく理解できた。","この授業では、単元全体を振り返りました。児童は磁石の基本的な性質から極性の法則、磁力の応用まで、学習内容を整理し、科学的な理解を深めました。"]
+      ],
+      best: [1,0,"磁石を触ってみる"], 
+      photos: [
+        [1,"いろいろな磁石"],
+        [2,"N極とS極"],[2,"磁石同士を近づける"],[2,"極を調べる実験"],
+        [5,"方位磁針で調べる"],[5,"くぎを磁石にする"],[5,"作った磁石で実験"],
+        [6,"いろいろな磁石"],[6,"磁石の強さを調べる"],
+        [7,"魚釣りゲームを作る"],[7,"友だちと遊ぶ"]
+      ],
+      reflection: "磁石で色々なものがくっつくか実験するのがとても楽しかったです。最初は鉄だけかと思っていたけど、ステンレスはくっつかないものがあるのが不思議でした。N極とS極があって、同じ極だと退け合うのも面白かったです。", 
+      nextAction: "次は電気の実験でも、予想を立ててから確かめるようにしたいです。", 
+      aiComment: "田中さんは、8回の授業を通して「予想と実際の違い」に気づく力が育ってきましたね。特に第2回で極の性質に驚き、第6回では磁石の強さを比べる実験で予想を立てる楽しさを実感していました。この「予想→実験→発見」のサイクルは、電気の学習だけでなく、日常生活の問題解決にも使える大切な考え方です。",
+      aiCommentRationale: "田中さんの振り返りを見ると、第2回と第6回で「予想を立ててから確かめるのが楽しかった」と書いており、科学的な探究プロセス自体を楽しめるようになっています。また、「わかった/できた」は第1回の3から第6回で5まで上昇し、第4回で一度2に下がった後も諦めずに取り組み、理解を深めていることが分かります。単元全体の振り返りでは「ステンレスはくっつかない」という予想外の発見に触れており、身近な素材への科学的な疑問を持てる姿勢が育っています。", 
+      hasComment: true 
+    },
     { id: 2, name: "佐藤 花子", status: "submitted", chart: [[4,3],[5,4],[4,5],[3,4],[5,4],[5,5],[4,5],[4,3]], best: null, photos: [], reflection: "磁石の力が紙や木を通るのがすごくびっくりしました。鉄は通らないと分かって、もっと実験したくなりました。おもちゃ作りでは魚釣りゲームを作って、磁石の性質を使えて嬉しかったです。", nextAction: "もっといろいろな材料で磁石が通るか試してみたいです。", aiComment: "予想と違う結果に驚き、さらに探究したいという気持ちが素晴らしいです。おもちゃ作りで学んだことを活用できましたね。", hasComment: false },
     { id: 3, name: "鈴木 健太", status: "submitted", chart: [[2,3],[3,4],[4,3],[2,2],[3,3],[4,4],[4,3],[3,2]], best: [3,0,"クリップ実験"], photos: [[3,"力の強さ比較"],[5,"退け合う実験"],[7,"完成作品"]], reflection: "クリップで磁石の強さを比べるのが面白かった。数を数えて比べるのが分かりやすかったです。N極とS極は少し難しかったけど、実験したら分かりました。", nextAction: "難しいことも実験で確かめたいです。", aiComment: "数を数えて比較する科学的な方法ができましたね。難しい内容も実験で理解しようとする姿勢が良いです。", hasComment: false },
     { id: 4, name: "高橋 美咲", status: "notSubmitted", chart: [[4,4],[5,5],[4,4],[3,3],[4,4],[5,5],[5,4],[0,0]], best: [2,1,"つくもの調べ①"], photos: [[2,"発見したこと"],[6,"木を通す実験"]], reflection: "磁石で色々なものを調べるのが楽しかったです。", nextAction: "", aiComment: "", hasComment: false },
@@ -44,13 +72,25 @@ export default function TeacherDashboard() {
   ];
 
   // データ展開関数
-  const dates = ['1/15','1/18','1/22','1/25','1/29','2/1','2/5','2/7'];
+  const dates = ['1月15日','1月18日','1月22日','1月25日','1月29日','2月1日','2月5日','2月7日'];
   const expandStudent = (s) => ({
     ...s,
-    chartData: s.chart.map((d,i) => ({ name: dates[i], lessonNumber: i+1, understanding: d[0], enjoyment: d[1] })),
+    chartData: s.chart.map((d,i) => ({ 
+      name: dates[i], 
+      lessonNumber: i+1, 
+      understanding: d[0], 
+      enjoyment: d[1],
+      'わかった/できた': d[0],
+      'たのしかった': d[1],
+      date: d.length > 2 ? d[2] : dates[i],
+      title: d.length > 3 ? d[3] : '',
+      comment: d.length > 4 ? d[4] : '',
+      aiLessonSummary: d.length > 5 ? d[5] : ''
+    })),
     bestShot: s.best ? { lessonNumber: s.best[0], photoIndex: s.best[1], photoName: s.best[2] } : null,
-    selectedPhotos: s.photos.map(p => ({ lessonNumber: p[0], photoName: p[1] })),
-    hasTeacherComment: s.hasComment
+    selectedPhotos: s.photos.map(p => ({ lessonNumber: p[0], photoName: p[1], photoIndex: 0 })),
+    hasTeacherComment: s.hasComment,
+    aiCommentRationale: s.aiCommentRationale || ''
   });
 
   const students = studentsData.map(expandStudent);
@@ -97,7 +137,7 @@ export default function TeacherDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       <div className="max-w-7xl mx-auto p-4 md:p-6">
         {currentPage === 'dashboard' ? (
-          <>
+        <>
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -247,244 +287,299 @@ export default function TeacherDashboard() {
         {selectedStudent && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
             <div className="min-h-screen flex items-start justify-center p-4 py-8">
-              <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-6 my-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  {(() => {
-                    const currentIndex = filteredStudents.findIndex(s => s.id === selectedStudent.id);
-                    const hasPrev = currentIndex > 0;
-                    const hasNext = currentIndex < filteredStudents.length - 1;
-                    return (
-                      <>
-                        <button 
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
-                            if (hasPrev) setSelectedStudent(filteredStudents[currentIndex - 1]); 
-                          }} 
-                          disabled={!hasPrev}
-                          className={`p-1.5 rounded-lg transition-all ${hasPrev ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+              <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-2xl shadow-2xl max-w-4xl w-full my-4">
+                
+                <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-t-2xl shadow-lg p-6 text-white">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {(() => {
+                        const currentIndex = filteredStudents.findIndex(s => s.id === selectedStudent.id);
+                        const hasPrev = currentIndex > 0;
+                        const hasNext = currentIndex < filteredStudents.length - 1;
+                        return (
+                          <>
+                            <button 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                if (hasPrev) setSelectedStudent(filteredStudents[currentIndex - 1]); 
+                              }} 
+                              disabled={!hasPrev}
+                              className={`p-2 rounded-lg transition-all ${hasPrev ? 'bg-white bg-opacity-20 hover:bg-opacity-30' : 'bg-white bg-opacity-10 cursor-not-allowed'}`}
+                            >
+                              <ChevronLeft size={24} />
+                            </button>
+                            <h2 className="text-3xl font-bold">{selectedStudent.name}</h2>
+                            <button 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                if (hasNext) setSelectedStudent(filteredStudents[currentIndex + 1]); 
+                              }} 
+                              disabled={!hasNext}
+                              className={`p-2 rounded-lg transition-all ${hasNext ? 'bg-white bg-opacity-20 hover:bg-opacity-30' : 'bg-white bg-opacity-10 cursor-not-allowed'}`}
+                            >
+                              <ChevronRight size={24} />
+                            </button>
+                          </>
+                        );
+                      })()}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setShowLessonFlow(true)}
+                        className="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-full transition-colors text-sm font-semibold"
+                      >
+                        <span>📊</span>
+                        授業の流れを見る
+                      </button>
+                      <button onClick={() => { setSelectedStudent(null); setTempComment(''); setShowLessonFlow(false); }} className="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
+                        <X size={28} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  {showLessonFlow ? (
+                    <>
+                      {/* 授業の流れ画面 */}
+                      <div className="mb-4">
+                        <button
+                          onClick={() => setShowLessonFlow(false)}
+                          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 font-semibold"
                         >
                           <ChevronLeft size={20} />
+                          振り返りに戻る
                         </button>
-                        <h2 className="text-2xl font-bold text-gray-800">{selectedStudent.name}</h2>
-                        <button 
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
-                            if (hasNext) setSelectedStudent(filteredStudents[currentIndex + 1]); 
-                          }} 
-                          disabled={!hasNext}
-                          className={`p-1.5 rounded-lg transition-all ${hasNext ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
-                        >
-                          <ChevronRight size={20} />
-                        </button>
-                      </>
-                    );
-                  })()}
-                </div>
-                <button onClick={() => { setSelectedStudent(null); setTempComment(''); }} className="text-gray-400 hover:text-gray-600">
-                  <X size={24} />
-                </button>
-              </div>
-
-              {(() => {
-                if (selectedStudent.status === 'notSubmitted') {
-                  return (
-                    <div>
-                      <div className="bg-yellow-50 rounded-lg p-3 text-center border border-yellow-200 mb-3">
-                        <p className="text-yellow-700 text-sm font-medium">未提出（振り返りを作成中、または未着手の状態です）</p>
                       </div>
-                      
-                      <div className="mb-4">
-                        <h3 className="text-base font-bold text-gray-800 mb-2">ふりかえり</h3>
-                        <ResponsiveContainer width="100%" height={150}>
-                          <LineChart data={selectedStudent.chartData}>
+
+                      {/* ふりかえりグラフ */}
+                      <div className="bg-gray-50 rounded-xl p-4 mb-6">
+                        <h3 className="text-sm font-bold text-gray-700 mb-2">ふりかえりグラフ</h3>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <LineChart data={selectedStudent.chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                            <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 11 }} />
-                            <YAxis domain={[0, 5]} ticks={[1,2,3,4,5]} tick={{ fill: '#6b7280', fontSize: 11 }} />
-                            <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }} />
-                            <Legend wrapperStyle={{ fontSize: '12px' }} />
-                            <Line type="monotone" dataKey="enjoyment" name="たのしかった" stroke="#ec4899" strokeWidth={2} dot={{ fill: '#ec4899', r: 3 }} />
-                            <Line type="monotone" dataKey="understanding" name="わかった/できた" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', r: 3 }} />
+                            <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 12 }} axisLine={{ stroke: '#d1d5db' }} />
+                            <YAxis domain={[0, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fill: '#6b7280', fontSize: 12 }} axisLine={{ stroke: '#d1d5db' }} />
+                            <Tooltip contentStyle={{ backgroundColor: 'white', border: '2px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }} />
+                            <Legend wrapperStyle={{ paddingTop: '8px' }} iconType="circle" />
+                            <Line type="monotone" dataKey="たのしかった" stroke="#ec4899" strokeWidth={2} dot={{ r: 4, fill: '#ec4899' }} activeDot={{ r: 6 }} />
+                            <Line type="monotone" dataKey="わかった/できた" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4, fill: '#f59e0b' }} activeDot={{ r: 6 }} />
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
 
-                      {selectedStudent.bestShot && (
-                        <div className="mb-4">
-                          <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
-                            <Star className="text-yellow-500" fill="#eab308" size={18} />
-                            <span>ベストショット</span>
-                          </h3>
-                          <div className="relative rounded-xl overflow-hidden border-2 border-yellow-200" style={{ aspectRatio: '16/9' }}>
-                            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50">
-                              <Camera className="w-12 h-12 text-yellow-400 mb-2" />
-                              <div className="text-sm text-gray-700 font-semibold">{selectedStudent.bestShot.photoName}</div>
-                              <div className="text-xs text-gray-500 mt-1">第{selectedStudent.bestShot.lessonNumber}回の授業</div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedStudent.selectedPhotos.length > 0 && (
-                        <div className="mb-4">
-                          <h3 className="text-base font-bold text-gray-800 mb-2">選んだ写真</h3>
-                          <div className="grid grid-cols-3 gap-3">
-                            {selectedStudent.selectedPhotos.map((photo, idx) => (
-                              <div key={idx} className="relative rounded-lg overflow-hidden border-2 border-gray-200" style={{ aspectRatio: '4/3' }}>
-                                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-2">
-                                  <Camera className="w-8 h-8 text-blue-300 mb-1" />
-                                  <div className="text-xs text-gray-600 font-medium text-center">{photo.photoName}</div>
-                                  <div className="text-xs text-gray-400 mt-1">第{photo.lessonNumber}回</div>
+                      {/* 各授業の詳細 */}
+                      <div className="space-y-4">
+                        {selectedStudent.chartData.map((lesson, idx) => {
+                          const lessonPhotos = selectedStudent.selectedPhotos.filter(p => p.lessonNumber === idx + 1);
+                          return (
+                            <div key={idx} className="border-2 border-gray-200 rounded-lg p-4">
+                              {/* 授業ヘッダー */}
+                              <div className="bg-green-50 rounded-lg p-3 mb-3">
+                                <div className="text-sm font-bold text-gray-800">
+                                  第{idx + 1}回 {lesson.date || lesson.name} - {lesson.title || ''}
                                 </div>
                               </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedStudent.reflection && (
-                        <div className="mb-4">
-                          <h3 className="text-base font-bold text-gray-800 mb-2">学んだこと・気づいたこと</h3>
-                          <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-3 border-2 border-green-200">
-                            <p className="text-gray-700 leading-relaxed text-sm">{selectedStudent.reflection}</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedStudent.nextAction && (
-                        <div className="mb-4">
-                          <h3 className="text-base font-bold text-gray-800 mb-2">次の学びに活かしたいこと</h3>
-                          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-3 border-2 border-blue-200">
-                            <p className="text-gray-700 leading-relaxed text-sm">{selectedStudent.nextAction}</p>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="border-t-2 border-gray-200 pt-4">
-                        <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
-                          <MessageSquare className="text-green-600" />
-                          <span>先生からのコメント</span>
-                        </h3>
-                        {teacherComments[selectedStudent.id] ? (
-                          <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200 mb-3">
-                            <p className="text-gray-700 leading-relaxed mb-3">{teacherComments[selectedStudent.id]}</p>
-                            <button onClick={() => { setTempComment(teacherComments[selectedStudent.id]); }} className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1">
-                              <Edit size={16} />
-                              <span>編集する</span>
-                            </button>
-                          </div>
-                        ) : null}
-                        <textarea value={tempComment} onChange={(e) => setTempComment(e.target.value)} placeholder="生徒へのコメントを入力してください" className="w-full border-2 border-gray-300 rounded-xl p-3 min-h-[80px] focus:border-green-400 focus:outline-none" />
-                        <button onClick={() => handleSendComment(selectedStudent.id)} disabled={!tempComment.trim()} className="mt-3 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 disabled:cursor-not-allowed">
-                          <Send size={20} />
-                          <span>コメントを送信</span>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                }
-                return (
-                  <div>
-                    {selectedStudent.bestShot && (
-                      <div className="mb-4">
-                        <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
-                          <Star className="text-yellow-500" fill="#eab308" size={18} />
-                          <span>ベストショット</span>
-                        </h3>
-                        <div className="relative rounded-xl overflow-hidden border-2 border-yellow-200" style={{ aspectRatio: '16/9' }}>
-                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50">
-                            <Camera className="w-12 h-12 text-yellow-400 mb-2" />
-                            <div className="text-sm text-gray-700 font-semibold">{selectedStudent.bestShot.photoName}</div>
-                            <div className="text-xs text-gray-500 mt-1">第{selectedStudent.bestShot.lessonNumber}回の授業</div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {selectedStudent.selectedPhotos.length > 0 && (
-                      <div className="mb-4">
-                        <h3 className="text-base font-bold text-gray-800 mb-2">選んだ写真</h3>
-                        <div className="grid grid-cols-3 gap-3">
-                          {selectedStudent.selectedPhotos.map((photo, idx) => (
-                            <div key={idx} className="relative rounded-lg overflow-hidden border-2 border-gray-200" style={{ aspectRatio: '4/3' }}>
-                              <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-2">
-                                <Camera className="w-8 h-8 text-blue-300 mb-1" />
-                                <div className="text-xs text-gray-600 font-medium text-center">{photo.photoName}</div>
-                                <div className="text-xs text-gray-400 mt-1">第{photo.lessonNumber}回</div>
+                              
+                              {/* 写真 */}
+                              {lessonPhotos.length > 0 && (
+                                <div className="grid grid-cols-3 gap-2 mb-3">
+                                  {lessonPhotos.map((photo, pidx) => (
+                                    <div key={pidx} className="relative rounded-lg overflow-hidden border-2 border-gray-200" style={{ aspectRatio: '4/3' }}>
+                                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-2">
+                                        <Camera className="w-8 h-8 text-green-300 mb-1" />
+                                        <div className="text-xs text-gray-600 font-medium text-center leading-tight">{photo.photoName}</div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              
+                              {/* 評価（たのしかった / わかった） */}
+                              <div className="flex gap-3 mb-3">
+                                <div className="flex-1 bg-pink-50 rounded-lg p-2">
+                                  <div className="text-xs text-gray-600 mb-1">たのしかった</div>
+                                  <div className="flex gap-0.5">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star key={i} size={14} className={i < lesson.enjoyment ? 'text-pink-400 fill-pink-400' : 'text-gray-300'} />
+                                    ))}
+                                  </div>
+                                </div>
+                                <div className="flex-1 bg-orange-50 rounded-lg p-2">
+                                  <div className="text-xs text-gray-600 mb-1">わかった/できた</div>
+                                  <div className="flex gap-0.5">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star key={i} size={14} className={i < lesson.understanding ? 'text-orange-400 fill-orange-400' : 'text-gray-300'} />
+                                    ))}
+                                  </div>
+                                </div>
                               </div>
+                              
+                              {/* AI授業解説 */}
+                              {lesson.aiLessonSummary && (
+                                <div className="bg-purple-50 rounded-lg p-3 mb-2 border border-purple-200">
+                                  <div className="text-xs text-purple-600 font-semibold mb-1">AI授業解説</div>
+                                  <p className="text-xs text-gray-700 leading-relaxed">{lesson.aiLessonSummary}</p>
+                                </div>
+                              )}
+                              
+                              {/* 生徒の振り返りコメント */}
+                              {lesson.comment && (
+                                <div className="bg-gray-50 rounded-lg p-3 mb-2">
+                                  <div className="text-xs text-gray-600 font-semibold mb-1">振り返り</div>
+                                  <p className="text-xs text-gray-700 leading-relaxed">{lesson.comment}</p>
+                                </div>
+                              )}
                             </div>
-                          ))}
-                        </div>
+                          );
+                        })}
                       </div>
-                    )}
-
-                    <div className="mb-4">
-                      <h3 className="text-base font-bold text-gray-800 mb-2">ふりかえり</h3>
-                      <ResponsiveContainer width="100%" height={180}>
-                        <LineChart data={selectedStudent.chartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                          <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 11 }} />
-                          <YAxis domain={[0, 5]} ticks={[1,2,3,4,5]} tick={{ fill: '#6b7280', fontSize: 11 }} />
-                          <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }} />
-                          <Legend wrapperStyle={{ fontSize: '12px' }} />
-                          <Line type="monotone" dataKey="enjoyment" name="たのしかった" stroke="#ec4899" strokeWidth={2} dot={{ fill: '#ec4899', r: 3 }} />
-                          <Line type="monotone" dataKey="understanding" name="わかった/できた" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', r: 3 }} />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    <div className="space-y-3 mb-4">
-                      <div>
-                        <h3 className="text-base font-bold text-gray-800 mb-2">学んだこと・気づいたこと</h3>
-                        <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-3 border-2 border-green-200">
-                          <p className="text-gray-700 leading-relaxed text-sm">{selectedStudent.reflection}</p>
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="text-base font-bold text-gray-800 mb-2">次の学びに活かしたいこと</h3>
-                        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-3 border-2 border-blue-200">
-                          <p className="text-gray-700 leading-relaxed text-sm">{selectedStudent.nextAction}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {selectedStudent.aiComment && (
-                      <div className="mb-4">
-                        <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
-                          <span className="text-purple-600">🤖</span>
-                          <span>AIコメント</span>
-                        </h3>
-                        <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-3 border-2 border-purple-200">
-                          <p className="text-gray-700 leading-relaxed text-sm">{selectedStudent.aiComment}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="border-t-2 border-gray-200 pt-4">
-                      <h3 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
-                        <MessageSquare className="text-green-600" />
-                        <span>先生からのコメント</span>
-                      </h3>
-                      {teacherComments[selectedStudent.id] ? (
-                        <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200 mb-3">
-                          <p className="text-gray-700 leading-relaxed mb-3">{teacherComments[selectedStudent.id]}</p>
-                          <button onClick={() => { setTempComment(teacherComments[selectedStudent.id]); }} className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1">
-                            <Edit size={16} />
-                            <span>編集する</span>
-                          </button>
-                        </div>
-                      ) : null}
-                      <textarea value={tempComment} onChange={(e) => setTempComment(e.target.value)} placeholder="生徒へのコメントを入力してください" className="w-full border-2 border-gray-300 rounded-xl p-3 min-h-[120px] focus:border-green-400 focus:outline-none" />
-                      <button onClick={() => handleSendComment(selectedStudent.id)} disabled={!tempComment.trim()} className="mt-3 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 disabled:cursor-not-allowed">
-                        <Send size={20} />
-                        <span>コメントを送信</span>
-                      </button>
+                    </>
+                  ) : (
+                    <>
+                      {/* 通常の振り返り画面 */}
+                  <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-green-200">
+                    <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      <span className="text-2xl">🎯</span>
+                      単元の目標
+                    </h2>
+                    <div className="bg-white rounded-xl p-4 shadow-sm">
+                      <p className="text-gray-700 leading-relaxed font-medium">{unitGoal}</p>
                     </div>
                   </div>
-                );
-              })()}
+
+                  {selectedStudent.status === 'notSubmitted' ? (
+                    <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-8 text-center">
+                      <Clock size={48} className="text-orange-500 mx-auto mb-3" />
+                      <h3 className="text-xl font-bold text-orange-800 mb-2">まだ提出されていません</h3>
+                      <p className="text-orange-700">生徒がポートフォリオを提出すると、詳細が表示されます。</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                        <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                          <span className="text-2xl">✍️</span>
+                          単元全体の振り返り
+                        </h2>
+                        
+                        <div className="mb-6">
+                          <div className="flex items-start gap-4">
+                            {selectedStudent.bestShot && (
+                              <div className="flex-shrink-0" style={{ width: '45%' }}>
+                                <div className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                                  <Star size={16} className="text-yellow-400 fill-yellow-400" />
+                                  ベストショット
+                                </div>
+                                <div className="relative rounded-xl overflow-hidden border-4 border-yellow-400 shadow-lg" style={{ aspectRatio: '4/3' }}>
+                                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50 p-4">
+                                    <Camera className="w-20 h-20 text-yellow-400 mb-2" />
+                                    <div className="text-lg text-gray-700 font-semibold text-center leading-tight mb-1">
+                                      {selectedStudent.bestShot.photoName}
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                      第{selectedStudent.bestShot.lessonNumber}回 {['1月15日（月）','1月18日（木）','1月22日（月）','1月25日（木）','1月29日（月）','2月1日（木）','2月5日（月）','2月7日（水）'][selectedStudent.bestShot.lessonNumber - 1]}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            <div className="flex-1">
+                              <div className="grid grid-cols-3 gap-2">
+                                {selectedStudent.selectedPhotos
+                                  .filter(photo => 
+                                    !(selectedStudent.bestShot?.lessonNumber === photo.lessonNumber && 
+                                      selectedStudent.bestShot?.photoIndex === photo.photoIndex)
+                                  )
+                                  .slice(0, 6)
+                                  .map((photo, idx) => (
+                                    <div key={idx} className="relative rounded-lg overflow-hidden shadow-sm border-2 border-green-300" style={{ aspectRatio: '4/3' }}>
+                                      <div className="w-full h-full flex flex-col items-center justify-center p-2 bg-gradient-to-br from-green-50 to-teal-50">
+                                        <Camera className="w-10 h-10 mb-1 text-green-300" />
+                                        <div className="text-xs text-gray-600 font-medium text-center leading-tight mb-0.5">
+                                          {photo.photoName}
+                                        </div>
+                                        <div className="text-xs text-gray-400">第{photo.lessonNumber}回</div>
+                                      </div>
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4 mt-6 pt-6 border-t-2 border-gray-200">
+                          <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200">
+                            <div className="text-sm font-semibold text-gray-700 mb-2">「{unitInfo.title}」の振り返り</div>
+                            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedStudent.reflection}</p>
+                          </div>
+
+                          {selectedStudent.aiComment && (
+                            <div className="bg-purple-50 rounded-xl p-4 border-2 border-purple-200">
+                              <div className="text-sm font-semibold text-gray-700 mb-2">まなびポケットAIからのコメント</div>
+                              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedStudent.aiComment}</p>
+                            </div>
+                          )}
+                          
+                          {selectedStudent.aiCommentRationale && (
+                            <div className="bg-red-50 rounded-xl p-4 border-2 border-red-200">
+                              <div className="text-sm font-semibold text-red-700 mb-2 flex items-center gap-2">
+                                <span>💡</span>
+                                AIコメントの補足
+                              </div>
+                              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-sm">{selectedStudent.aiCommentRationale}</p>
+                            </div>
+                          )}
+                          
+                          {selectedStudent.nextAction && (
+                            <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200">
+                              <div className="text-sm font-semibold text-gray-700 mb-2">気づきを深めよう</div>
+                              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedStudent.nextAction}</p>
+                            </div>
+                          )}
+
+                          <div className="bg-orange-50 rounded-xl p-4 border-2 border-orange-200">
+                            <div className="text-sm font-semibold text-gray-700 mb-2">👨‍🏫 先生からのコメント</div>
+                            {teacherComments[selectedStudent.id] ? (
+                              <>
+                                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap mb-3">{teacherComments[selectedStudent.id]}</p>
+                                <button onClick={() => { setTempComment(teacherComments[selectedStudent.id]); }} className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1">
+                                  <Edit size={16} />
+                                  <span>編集</span>
+                                </button>
+                              </>
+                            ) : (
+                              <div>
+                                <textarea 
+                                  value={tempComment} 
+                                  onChange={(e) => setTempComment(e.target.value)} 
+                                  placeholder="コメントを入力..." 
+                                  className="w-full border-2 border-gray-200 rounded-lg p-3 mb-2 focus:border-orange-400 focus:outline-none" 
+                                  rows={3} 
+                                />
+                                <button 
+                                  onClick={() => handleSendComment(selectedStudent.id)} 
+                                  disabled={!tempComment.trim()} 
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
+                                    tempComment.trim() 
+                                      ? 'bg-orange-500 hover:bg-orange-600 text-white' 
+                                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                  }`}
+                                >
+                                  <Send size={16} />送信
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
           </div>
         )}
 
@@ -511,51 +606,56 @@ export default function TeacherDashboard() {
             </div>
           </div>
         )}
-          </>
+        </>
         ) : (
-          <div>
-            <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl shadow-lg p-6 mb-6 text-white">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <button 
-                    onClick={() => setCurrentPage('dashboard')}
-                    className="bg-white bg-opacity-90 hover:bg-opacity-100 text-green-600 px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all shadow-md hover:shadow-lg"
-                  >
-                    <span>←</span>
-                    <span>戻る</span>
-                  </button>
-                  <div className="text-5xl">{unitInfo.icon}</div>
-                  <div>
-                    <div className="text-sm opacity-90 mb-1">{unitInfo.subject}　単元の振り返り</div>
-                    <h1 className="text-3xl font-bold">{unitInfo.title}</h1>
-                  </div>
-                </div>
-                <span className="text-sm bg-white bg-opacity-20 px-4 py-2 rounded-full font-semibold">
-                  全8回完了
-                </span>
-              </div>
-              <p className="text-lg opacity-90">{unitInfo.period}</p>
+        <>
+        {/* 注意メッセージ */}
+        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 mb-4">
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">⚠️</div>
+            <div className="flex-1">
+              <p className="text-sm text-gray-700 leading-relaxed">
+                <span className="font-bold text-yellow-800">本ページは現時点で要件検討中のため、初期スコープとしてはベストエフォートの範囲（実装なしの可能性あり）とさせてください</span>
+              </p>
             </div>
-
-            <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-green-200">
-              <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-                <span className="text-2xl">🎯</span>
-                単元の目標
-              </h2>
-              <div className="bg-white rounded-xl p-4 shadow-sm">
-                <p className="text-gray-700 leading-relaxed font-medium">{unitGoal}</p>
-              </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+          <div className="flex items-center gap-4 mb-4">
+            <button 
+              onClick={() => setCurrentPage('dashboard')}
+              className="bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 border-2 border-gray-300 px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all shadow-md hover:shadow-lg"
+            >
+              <span>←</span>
+              <span>戻る</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-4xl">{unitInfo.icon}</span>
+            <div>
+              <div className="text-sm text-gray-600 mb-1">{unitInfo.subject}　単元の振り返り</div>
+              <h1 className="text-3xl font-bold text-gray-800">{unitInfo.title}</h1>
             </div>
+          </div>
+          <div className="flex flex-wrap gap-4 text-sm text-gray-600 mt-3">
+            <span className="font-semibold">{unitInfo.grade}</span>
+            <span>|</span>
+            <span>{unitInfo.period}</span>
+            <span>|</span>
+            <span className="font-semibold">全8回完了</span>
+          </div>
+        </div>
 
-            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-purple-200">
-              <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-                <div className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg p-2">
-                  <TrendingUp size={20} />
-                </div>
-                AIコメント
-              </h2>
-              <div className="bg-white rounded-xl p-4 shadow-sm">
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">この「磁石の実験」の単元では、20人の児童が8回の授業を通して、磁石の基本的な性質から応用まで幅広く学習しました。
+        <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-purple-200">
+          <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+            <div className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg p-2">
+              <TrendingUp size={20} />
+            </div>
+            AIコメント
+          </h2>
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">この「磁石の実験」の単元では、20人の児童が8回の授業を通して、磁石の基本的な性質から応用まで幅広く学習しました。
 
 全体的な傾向として、「わかった/できた」の平均は3.8、「たのしかった」の平均は3.9と、理解度・楽しさともに高い水準を維持できました。
 
@@ -566,115 +666,115 @@ export default function TeacherDashboard() {
 第7回のおもちゃ作りでは、学んだ知識を実際に活用する力が発揮され、多くの児童が創造的な作品を作り上げました。「磁石の性質を使って」という表現が振り返りに多く見られ、知識の定着と応用力の育成が確認できます。
 
 今後の課題としては、難しい概念（N極・S極など）の理解をさらに深めるための工夫と、まとめの授業での楽しさをどう維持するかが挙げられます。</p>
-              </div>
-            </div>
+          </div>
+        </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">ふりかえり（クラス平均）</h2>
-              <div className="bg-gray-50 rounded-xl p-4">
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart 
-                    data={[
-                      { name: '1/15', lessonNumber: 1, 'わかった/できた': 3.2, 'たのしかった': 3.1 },
-                      { name: '1/18', lessonNumber: 2, 'わかった/できた': 3.8, 'たのしかった': 4.2 },
-                      { name: '1/22', lessonNumber: 3, 'わかった/できた': 3.9, 'たのしかった': 4.3 },
-                      { name: '1/25', lessonNumber: 4, 'わかった/できた': 2.6, 'たのしかった': 3.2 },
-                      { name: '1/29', lessonNumber: 5, 'わかった/できた': 4.1, 'たのしかった': 4.0 },
-                      { name: '2/1', lessonNumber: 6, 'わかった/できた': 4.6, 'たのしかった': 4.7 },
-                      { name: '2/5', lessonNumber: 7, 'わかった/できた': 4.3, 'たのしかった': 4.5 },
-                      { name: '2/7', lessonNumber: 8, 'わかった/できた': 4.2, 'たのしかった': 3.3 }
-                    ]}
-                    margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 13 }} axisLine={{ stroke: '#d1d5db' }} />
-                    <YAxis domain={[0, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fill: '#6b7280', fontSize: 13 }} axisLine={{ stroke: '#d1d5db' }} />
-                    <Tooltip contentStyle={{ backgroundColor: 'white', border: '2px solid #e5e7eb', borderRadius: '8px', fontSize: '13px' }} />
-                    <Legend wrapperStyle={{ paddingTop: '10px' }} iconType="circle" />
-                    <Line type="monotone" dataKey="たのしかった" stroke="#ec4899" strokeWidth={3} dot={{ fill: '#ec4899', r: 5 }} activeDot={{ r: 7 }} cursor="pointer" />
-                    <Line type="monotone" dataKey="わかった/できた" stroke="#f59e0b" strokeWidth={3} dot={{ fill: '#f59e0b', r: 5 }} activeDot={{ r: 7 }} cursor="pointer" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">ふりかえり（クラス平均）</h2>
+          <div className="bg-gray-50 rounded-xl p-4">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart 
+                data={[
+                  { name: '1/15', 'わかった/できた': 3.2, 'たのしかった': 3.1 },
+                  { name: '1/18', 'わかった/できた': 3.8, 'たのしかった': 4.2 },
+                  { name: '1/22', 'わかった/できた': 3.9, 'たのしかった': 4.3 },
+                  { name: '1/25', 'わかった/できた': 2.6, 'たのしかった': 3.2 },
+                  { name: '1/29', 'わかった/できた': 4.1, 'たのしかった': 4.0 },
+                  { name: '2/1', 'わかった/できた': 4.6, 'たのしかった': 4.7 },
+                  { name: '2/5', 'わかった/できた': 4.3, 'たのしかった': 4.5 },
+                  { name: '2/7', 'わかった/できた': 4.2, 'たのしかった': 3.3 }
+                ]}
+                margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 13 }} axisLine={{ stroke: '#d1d5db' }} />
+                <YAxis domain={[0, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fill: '#6b7280', fontSize: 13 }} axisLine={{ stroke: '#d1d5db' }} />
+                <Tooltip contentStyle={{ backgroundColor: 'white', border: '2px solid #e5e7eb', borderRadius: '8px', fontSize: '13px' }} />
+                <Legend wrapperStyle={{ paddingTop: '10px' }} iconType="circle" />
+                <Line type="monotone" dataKey="たのしかった" stroke="#ec4899" strokeWidth={3} dot={{ fill: '#ec4899', r: 5 }} activeDot={{ r: 7 }} />
+                <Line type="monotone" dataKey="わかった/できた" stroke="#f59e0b" strokeWidth={3} dot={{ fill: '#f59e0b', r: 5 }} activeDot={{ r: 7 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <span className="text-2xl">📝</span>
-                各授業の記録
-              </h2>
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <span className="text-2xl">📝</span>
+            各授業の記録
+          </h2>
+          
+          {[
+            { lessonNumber: 1, date: '1月15日（月）', time: '3時間目', title: '磁石ってなんだろう', goal: '磁石の性質について知り、疑問を持とう', avgUnderstanding: 3.2, avgEnjoyment: 3.1, photos: ['磁石を触ってみる', 'いろいろな磁石', '身の回りの磁石', '磁石の観察'], commentSummary: '児童たちは磁石に初めて触れ、興味津々の様子でした。「もっと調べたい」「不思議だな」という声が多く聞かれ、学習への意欲が高まっていました。' },
+            { lessonNumber: 2, date: '1月18日（木）', time: '2時間目', title: '磁石につくもの・つかないもの', goal: '磁石にくっつくものとくっつかないものを調べて、きまりを見つけよう', avgUnderstanding: 3.8, avgEnjoyment: 4.2, photos: ['つくもの調べ①', 'つくもの調べ②', '実験結果の記録', '発見したこと'], commentSummary: '予想を立ててから実験する姿勢が見られました。「鉄だけがくっつく」「ステンレスは意外」など、驚きと発見の声が多く、科学的な思考が育っています。' },
+            { lessonNumber: 3, date: '1月22日（月）', time: '3時間目', title: '磁石の力の強さを調べよう', goal: '磁石の力の強さについて実験で確かめよう', avgUnderstanding: 3.9, avgEnjoyment: 4.3, photos: ['クリップ実験', '力の強さ比較', '実験のまとめ', '数を数える'], commentSummary: 'クリップの数を数えて比較する方法で、磁石によって力が違うことを発見しました。数値で比較する科学的な手法を体験できた授業でした。' },
+            { lessonNumber: 4, date: '1月25日（木）', time: '2時間目', title: '磁石の極を調べよう', goal: '磁石のN極とS極について理解しよう', avgUnderstanding: 2.6, avgEnjoyment: 3.2, photos: ['極の観察', '極の確認', 'N極とS極', '磁石の極実験'], commentSummary: 'N極とS極という概念は少し難しかったようですが、引き合ったり退け合ったりする現象に「不思議」という反応が多く見られました。理解には個人差がありました。' },
+            { lessonNumber: 5, date: '1月29日（月）', time: '3時間目', title: '磁石どうしの力を調べよう', goal: '磁石どうしが引き合ったり退け合ったりするきまりを見つけよう', avgUnderstanding: 4.1, avgEnjoyment: 4.0, photos: ['引き合う実験', '退け合う実験', '極の観察', 'きまりの発見'], commentSummary: '実験を通して「同じ極は退け合う、違う極は引き合う」というきまりを自分たちで発見できました。「わかった！」という達成感のある声が多く聞かれました。' },
+            { lessonNumber: 6, date: '2月1日（木）', time: '2時間目', title: '磁石の力がつたわるか調べよう', goal: '磁石の力が物を通して伝わるか実験しよう', avgUnderstanding: 4.6, avgEnjoyment: 4.7, photos: ['紙を通す実験', '木を通す実験', '鉄板での実験', '透過実験'], commentSummary: '予想と違う結果に多くの児童が驚いていました。「紙や木は通るのに鉄は通らない」という発見に、科学の面白さを感じている様子でした。この単元で最も盛り上がった授業でした。' },
+            { lessonNumber: 7, date: '2月5日（月）', time: '3時間目', title: '磁石で作ってみよう', goal: '学んだことを使って、磁石のおもちゃを作ろう', avgUnderstanding: 4.3, avgEnjoyment: 4.5, photos: ['おもちゃ設計図', '制作途中', '完成作品', 'みんなで遊ぶ'], commentSummary: '学んだ知識を活かして創造的なおもちゃを作りました。魚釣りゲームや迷路など、工夫を凝らした作品が多く、「磁石の性質を使えた」という達成感が見られました。' },
+            { lessonNumber: 8, date: '2月7日（水）', time: '2時間目', title: '磁石のまとめをしよう', goal: 'これまでの学習を振り返り、磁石について分かったことをまとめよう', avgUnderstanding: 4.2, avgEnjoyment: 3.3, photos: ['まとめノート', '学習の記録', '発見のまとめ', '振り返りシート'], commentSummary: '単元全体を振り返り、学んだことを整理しました。「たくさんのことがわかった」「生活の中でも使われている」など、学びを実感する声が多く聞かれました。' }
+          ].map((lesson) => (
+            <div key={lesson.lessonNumber} className="bg-white rounded-2xl shadow-lg p-6">
+              <div className="bg-green-50 rounded-lg p-3 mb-3 border-2 border-green-200">
+                <div className="text-lg font-bold text-gray-800">
+                  第{lesson.lessonNumber}回 {lesson.date} {lesson.time} - {lesson.title}
+                </div>
+                <div className="text-sm text-gray-600 mt-1">目標：{lesson.goal}</div>
+              </div>
               
-              {[
-                { lessonNumber: 1, date: '1月15日（月）', time: '3時間目', title: '磁石ってなんだろう', goal: '磁石の性質について知り、疑問を持とう', avgUnderstanding: 3.2, avgEnjoyment: 3.1, photos: ['磁石を触ってみる', 'いろいろな磁石', '身の回りの磁石', '磁石の観察'], commentSummary: '児童たちは磁石に初めて触れ、興味津々の様子でした。「もっと調べたい」「不思議だな」という声が多く聞かれ、学習への意欲が高まっていました。' },
-                { lessonNumber: 2, date: '1月18日（木）', time: '2時間目', title: '磁石につくもの・つかないもの', goal: '磁石にくっつくものとくっつかないものを調べて、きまりを見つけよう', avgUnderstanding: 3.8, avgEnjoyment: 4.2, photos: ['つくもの調べ①', 'つくもの調べ②', '実験結果の記録', '発見したこと'], commentSummary: '予想を立ててから実験する姿勢が見られました。「鉄だけがくっつく」「ステンレスは意外」など、驚きと発見の声が多く、科学的な思考が育っています。' },
-                { lessonNumber: 3, date: '1月22日（月）', time: '3時間目', title: '磁石の力の強さを調べよう', goal: '磁石の力の強さについて実験で確かめよう', avgUnderstanding: 3.9, avgEnjoyment: 4.3, photos: ['クリップ実験', '力の強さ比較', '実験のまとめ', '数を数える'], commentSummary: 'クリップの数を数えて比較する方法で、磁石によって力が違うことを発見しました。数値で比較する科学的な手法を体験できた授業でした。' },
-                { lessonNumber: 4, date: '1月25日（木）', time: '2時間目', title: '磁石の極を調べよう', goal: '磁石のN極とS極について理解しよう', avgUnderstanding: 2.6, avgEnjoyment: 3.2, photos: ['極の観察', '極の確認', 'N極とS極', '磁石の極実験'], commentSummary: 'N極とS極という概念は少し難しかったようですが、引き合ったり退け合ったりする現象に「不思議」という反応が多く見られました。理解には個人差がありました。' },
-                { lessonNumber: 5, date: '1月29日（月）', time: '3時間目', title: '磁石どうしの力を調べよう', goal: '磁石どうしが引き合ったり退け合ったりするきまりを見つけよう', avgUnderstanding: 4.1, avgEnjoyment: 4.0, photos: ['引き合う実験', '退け合う実験', '極の観察', 'きまりの発見'], commentSummary: '実験を通して「同じ極は退け合う、違う極は引き合う」というきまりを自分たちで発見できました。「わかった！」という達成感のある声が多く聞かれました。' },
-                { lessonNumber: 6, date: '2月1日（木）', time: '2時間目', title: '磁石の力がつたわるか調べよう', goal: '磁石の力が物を通して伝わるか実験しよう', avgUnderstanding: 4.6, avgEnjoyment: 4.7, photos: ['紙を通す実験', '木を通す実験', '鉄板での実験', '透過実験'], commentSummary: '予想と違う結果に多くの児童が驚いていました。「紙や木は通るのに鉄は通らない」という発見に、科学の面白さを感じている様子でした。この単元で最も盛り上がった授業でした。' },
-                { lessonNumber: 7, date: '2月5日（月）', time: '3時間目', title: '磁石で作ってみよう', goal: '学んだことを使って、磁石のおもちゃを作ろう', avgUnderstanding: 4.3, avgEnjoyment: 4.5, photos: ['おもちゃ設計図', '制作途中', '完成作品', 'みんなで遊ぶ'], commentSummary: '学んだ知識を活かして創造的なおもちゃを作りました。魚釣りゲームや迷路など、工夫を凝らした作品が多く、「磁石の性質を使えた」という達成感が見られました。' },
-                { lessonNumber: 8, date: '2月7日（水）', time: '2時間目', title: '磁石のまとめをしよう', goal: 'これまでの学習を振り返り、磁石について分かったことをまとめよう', avgUnderstanding: 4.2, avgEnjoyment: 3.3, photos: ['まとめノート', '学習の記録', '発見のまとめ', '振り返りシート'], commentSummary: '単元全体を振り返り、学んだことを整理しました。「たくさんのことがわかった」「生活の中でも使われている」など、学びを実感する声が多く聞かれました。' }
-              ].map((lesson) => (
-                <div key={lesson.lessonNumber} id={`lesson-${lesson.lessonNumber}`} className="bg-white rounded-2xl shadow-lg p-6">
-                  <div className="bg-green-50 rounded-lg p-3 mb-3 border-2 border-green-200">
-                    <div className="text-lg font-bold text-gray-800">
-                      第{lesson.lessonNumber}回 {lesson.date} {lesson.time} - {lesson.title}
+              <div className="mb-3">
+                <div className="text-sm text-gray-700 font-semibold mb-2">代表的な写真</div>
+                <div className="grid grid-cols-4 gap-2">
+                  {lesson.photos.slice(0, 4).map((photo, idx) => (
+                    <div key={idx} className="relative rounded-lg overflow-hidden border-2 border-blue-200" style={{ aspectRatio: '4/3' }}>
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-2">
+                        <Camera className="w-8 h-8 text-blue-400 mb-1" />
+                        <div className="text-xs text-gray-700 font-medium text-center leading-tight">{photo}</div>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600 mt-1">目標：{lesson.goal}</div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex gap-4 mb-3">
+                <div className="flex-1 bg-pink-50 rounded-lg p-3 border-2 border-pink-200">
+                  <div className="text-sm text-gray-700 mb-1 font-semibold flex items-center gap-1">
+                    <Heart size={16} className="text-pink-500" fill="#ec4899" />
+                    たのしかった（平均）
                   </div>
-                  
-                  <div className="mb-3">
-                    <div className="text-sm text-gray-700 font-semibold mb-2">代表的な写真</div>
-                    <div className="grid grid-cols-4 gap-2">
-                      {lesson.photos.slice(0, 4).map((photo, idx) => (
-                        <div key={idx} className="relative rounded-lg overflow-hidden border-2 border-blue-200" style={{ aspectRatio: '4/3' }}>
-                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-2">
-                            <Camera className="w-8 h-8 text-blue-400 mb-1" />
-                            <div className="text-xs text-gray-700 font-medium text-center leading-tight">{photo}</div>
-                          </div>
-                        </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={20} className={i < Math.round(lesson.avgEnjoyment) ? 'text-pink-400 fill-pink-400' : 'text-gray-300'} />
                       ))}
                     </div>
-                  </div>
-                  
-                  <div className="flex gap-4 mb-3">
-                    <div className="flex-1 bg-pink-50 rounded-lg p-3 border-2 border-pink-200">
-                      <div className="text-sm text-gray-700 mb-1 font-semibold flex items-center gap-1">
-                        <Heart size={16} className="text-pink-500" fill="#ec4899" />
-                        たのしかった（平均）
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-0.5">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} size={20} className={i < Math.round(lesson.avgEnjoyment) ? 'text-pink-400 fill-pink-400' : 'text-gray-300'} />
-                          ))}
-                        </div>
-                        <span className="text-xl font-bold text-pink-600">{lesson.avgEnjoyment.toFixed(1)}</span>
-                      </div>
-                    </div>
-                    <div className="flex-1 bg-orange-50 rounded-lg p-3 border-2 border-orange-200">
-                      <div className="text-sm text-gray-700 mb-1 font-semibold flex items-center gap-1">
-                        <Lightbulb size={16} className="text-amber-500" fill="#f59e0b" />
-                        わかった/できた（平均）
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-0.5">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} size={20} className={i < Math.round(lesson.avgUnderstanding) ? 'text-orange-400 fill-orange-400' : 'text-gray-300'} />
-                          ))}
-                        </div>
-                        <span className="text-xl font-bold text-orange-600">{lesson.avgUnderstanding.toFixed(1)}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-purple-50 rounded-lg p-4 border-2 border-purple-200">
-                    <div className="text-sm text-purple-700 font-semibold mb-2">生徒コメントAI要約</div>
-                    <p className="text-sm text-gray-700 leading-relaxed">{lesson.commentSummary}</p>
+                    <span className="text-xl font-bold text-pink-600">{lesson.avgEnjoyment.toFixed(1)}</span>
                   </div>
                 </div>
-              ))}
+                <div className="flex-1 bg-orange-50 rounded-lg p-3 border-2 border-orange-200">
+                  <div className="text-sm text-gray-700 mb-1 font-semibold flex items-center gap-1">
+                    <Lightbulb size={16} className="text-amber-500" fill="#f59e0b" />
+                    わかった/できた（平均）
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={20} className={i < Math.round(lesson.avgUnderstanding) ? 'text-orange-400 fill-orange-400' : 'text-gray-300'} />
+                      ))}
+                    </div>
+                    <span className="text-xl font-bold text-orange-600">{lesson.avgUnderstanding.toFixed(1)}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-purple-50 rounded-lg p-4 border-2 border-purple-200">
+                <div className="text-sm text-purple-700 font-semibold mb-2">生徒コメントAI要約</div>
+                <p className="text-sm text-gray-700 leading-relaxed">{lesson.commentSummary}</p>
+              </div>
             </div>
-          </div>
+          ))}
+        </div>
+        </>
         )}
       </div>
     </div>
