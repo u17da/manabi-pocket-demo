@@ -11,8 +11,8 @@ function Home() {
   const demos = [
     {
       id: 'weekly-reflection',
-      title: '単元振り返り（児童用）',
-      description: '理科「磁石の実験」の単元振り返りシート。児童が学習を振り返り、AIコメントを受け取る機能のデモ。',
+      title: '単元振り返り（児童生徒用）',
+      description: '理科「磁石の実験」の単元振り返りシート。児童生徒が学習を振り返り、AIコメントを受け取る機能のデモ。',
       icon: BookOpen,
       path: '/weekly-reflection',
       status: 'ready',
