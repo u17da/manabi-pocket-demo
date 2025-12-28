@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Camera, Star, TrendingUp, ExternalLink, Home } from 'lucide-react';
+import { Camera, ChevronRight, Star, TrendingUp, ExternalLink, Home } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function WeeklyReflection() {
   const [studentReflection, setStudentReflection] = useState('');
   const [additionalReflection, setAdditionalReflection] = useState('');
-  const [nextWeekAction, setNextWeekAction] = useState('');
   const [showReferenceInfo, setShowReferenceInfo] = useState(false);
+  const [showDevNote, setShowDevNote] = useState(false);
   const [step2AIComment, setStep2AIComment] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [customGoal, setCustomGoal] = useState('');
+  const [selectedLesson, setSelectedLesson] = useState(null);
 
   const unitInfo = {
     icon: '🧲',
@@ -115,6 +116,7 @@ export default function WeeklyReflection() {
     }
   ];
 
+  // 各授業のベストショット（最初の写真）を初期選択
   const getInitialSelectedPhotos = () => {
     const photos = [];
     allLessons.forEach(lesson => {
@@ -122,7 +124,7 @@ export default function WeeklyReflection() {
         photos.push({ 
           lessonNumber: lesson.lessonNumber, 
           photoIndex: 0,
-          isCoverShot: true
+          isCoverShot: true // 授業のカバーショット
         });
       }
     });
@@ -130,16 +132,17 @@ export default function WeeklyReflection() {
   };
   
   const [selectedPhotos, setSelectedPhotos] = useState(getInitialSelectedPhotos());
-  const [mainDisplayPhoto, setMainDisplayPhoto] = useState({ lessonNumber: 2, photoIndex: 0 });
+  const [mainDisplayPhoto, setMainDisplayPhoto] = useState({ lessonNumber: 2, photoIndex: 0 }); // 大きく表示する写真
   const [showPhotoModal, setShowPhotoModal] = useState(false);
-  const [tempSelectedPhotos, setTempSelectedPhotos] = useState([]);
-  const [isFinalSubmitted, setIsFinalSubmitted] = useState(false);
-  const [isLoadingAI, setIsLoadingAI] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [tempSelectedPhotos, setTempSelectedPhotos] = useState([]); // モーダル内の一時選択
+  const [isFinalSubmitted, setIsFinalSubmitted] = useState(false); // 最終提出状態
+  const [isLoadingAI, setIsLoadingAI] = useState(false); // AIコメント生成中
+  const [isEditing, setIsEditing] = useState(false); // 編集モード
 
   const chartData = allLessons.map(lesson => ({
     name: `${lesson.date.split('(')[0]}`,
     lessonNumber: lesson.lessonNumber,
+    date: lesson.date,
     'わかった/できた': lesson.understanding,
     'たのしかった': lesson.enjoyment
   }));
@@ -153,6 +156,8 @@ export default function WeeklyReflection() {
 
   const handleStep1Submit = () => {
     setIsLoadingAI(true);
+    
+    // 2秒のローディング演出
     setTimeout(() => {
       const comment = generateStep2AIComment();
       setStep2AIComment(comment);
@@ -186,13 +191,16 @@ export default function WeeklyReflection() {
   const toggleTempPhoto = (lessonNum, photoIdx) => {
     const existingIndex = tempSelectedPhotos.findIndex(p => p.lessonNumber === lessonNum && p.photoIndex === photoIdx);
     if (existingIndex >= 0) {
+      // 既に選択されている場合は削除
       setTempSelectedPhotos(tempSelectedPhotos.filter((_, idx) => idx !== existingIndex));
     } else {
+      // 選択されていない場合は追加
       setTempSelectedPhotos([...tempSelectedPhotos, { lessonNumber: lessonNum, photoIndex: photoIdx }]);
     }
   };
 
   const confirmPhotoSelection = () => {
+    // 一時選択を本選択に追加
     const newPhotos = tempSelectedPhotos.filter(temp => 
       !selectedPhotos.some(selected => 
         selected.lessonNumber === temp.lessonNumber && selected.photoIndex === temp.photoIndex
@@ -208,12 +216,25 @@ export default function WeeklyReflection() {
     setShowPhotoModal(false);
   };
 
+  const toggleSelectedPhoto = (lessonNum, photoIdx) => {
+    const existingIndex = selectedPhotos.findIndex(p => p.lessonNumber === lessonNum && p.photoIndex === photoIdx);
+    if (existingIndex >= 0) {
+      // 既に選択されている場合は削除
+      setSelectedPhotos(selectedPhotos.filter((_, idx) => idx !== existingIndex));
+    } else {
+      // 選択されていない場合は追加
+      setSelectedPhotos([...selectedPhotos, { lessonNumber: lessonNum, photoIndex: photoIdx, isCoverShot: false }]);
+    }
+  };
+
+
   const removeSelectedPhoto = (lessonNum, photoIdx) => {
     setSelectedPhotos(selectedPhotos.filter(p => !(p.lessonNumber === lessonNum && p.photoIndex === photoIdx)));
   };
 
   // プレビュー画面
   if (isSubmitted) {
+    // 授業の流れを見るページを表示中
     if (showReferenceInfo) {
       return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 md:p-8">
@@ -239,10 +260,19 @@ export default function WeeklyReflection() {
 
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <span className="text-2xl">📚</span>
-                  授業の流れ
-                </h2>
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <span className="text-2xl">📚</span>
+                    授業の流れ
+                  </h2>
+                  <button
+                    onClick={() => setShowDevNote(!showDevNote)}
+                    className="text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-semibold py-1 px-2 rounded border border-yellow-300 cursor-pointer transition-colors"
+                    title="実装メモを表示"
+                  >
+                    📝 実装メモ
+                  </button>
+                </div>
                 <button
                   onClick={() => setShowReferenceInfo(false)}
                   className="text-gray-500 hover:text-gray-700 font-bold text-lg px-3 py-1 rounded-lg hover:bg-gray-100"
@@ -251,24 +281,82 @@ export default function WeeklyReflection() {
                 </button>
               </div>
 
-              <div className="bg-gray-50 rounded-xl p-4 mb-6">
+              {showDevNote && (
+                <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 mb-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-yellow-900 flex items-center gap-2">
+                      <span>📝</span>
+                      実装メモ
+                    </h3>
+                    <button
+                      onClick={() => setShowDevNote(false)}
+                      className="text-yellow-700 hover:text-yellow-900 font-bold"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="text-sm text-yellow-900 space-y-3 leading-relaxed">
+                    <p>モックUIではうまく実現できなかったのですが、ふりかえりグラフを見て、例えば「充実度・理解度の両方が低い1月25日について詳細が見たい」となった場合、すぐに該当の授業へ遷移できるようにしたいです。</p>
+                    
+                    <p>可能であればグラフの値や日付などをクリックすることで該当の授業に遷移するなどが考えられますが、グラフ内のクリックイベントとかは色々大変そうな気もするため、実現方式はあまりこだわりなく、該当の日付の授業に簡便に遷移できるようにしたいと考えています。</p>
+                  </div>
+                </div>
+              )}
+
+                            <div className="bg-gray-50 rounded-xl p-4 mb-4">
                 <h3 className="text-sm font-bold text-gray-700 mb-2">ふりかえりグラフ</h3>
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                  <LineChart 
+                    data={chartData} 
+                    margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 12 }} axisLine={{ stroke: '#d1d5db' }} />
-                    <YAxis domain={[0, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fill: '#6b7280', fontSize: 12 }} axisLine={{ stroke: '#d1d5db' }} />
-                    <Tooltip contentStyle={{ backgroundColor: 'white', border: '2px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }} />
-                    <Legend wrapperStyle={{ paddingTop: '8px' }} iconType="circle" />
-                    <Line type="monotone" dataKey="たのしかった" stroke="#ec4899" strokeWidth={2} dot={{ r: 4, fill: '#ec4899' }} />
-                    <Line type="monotone" dataKey="わかった/できた" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4, fill: '#f59e0b' }} />
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ fill: '#6b7280', fontSize: 12 }}
+                      axisLine={{ stroke: '#d1d5db' }}
+                    />
+                    <YAxis 
+                      domain={[0, 5]} 
+                      ticks={[1, 2, 3, 4, 5]}
+                      tick={{ fill: '#6b7280', fontSize: 12 }}
+                      axisLine={{ stroke: '#d1d5db' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white', 
+                        border: '2px solid #e5e7eb',
+                        borderRadius: '8px',
+                        fontSize: '12px'
+                      }}
+                    />
+                    <Legend 
+                      wrapperStyle={{ paddingTop: '8px' }}
+                      iconType="circle"
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="たのしかった" 
+                      stroke="#ec4899" 
+                      strokeWidth={2}
+                      dot={{ r: 4, fill: '#ec4899' }}
+                      activeDot={{ r: 6 }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="わかった/できた" 
+                      stroke="#f59e0b" 
+                      strokeWidth={2}
+                      dot={{ r: 4, fill: '#f59e0b' }}
+                      activeDot={{ r: 6 }}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
 
               <div className="space-y-4">
                 {allLessons.map((lesson) => (
-                  <div key={lesson.lessonNumber} className="border-2 border-gray-200 rounded-lg p-4">
+                  <div key={lesson.lessonNumber} id={`lesson-${lesson.lessonNumber}`} className="border-2 border-gray-200 rounded-lg p-4 transition-all">
                     <div className="bg-green-50 rounded-lg p-3 mb-3">
                       <div className="text-sm font-bold text-gray-800">
                         第{lesson.lessonNumber}回 {lesson.date} - {lesson.title}
@@ -365,24 +453,14 @@ export default function WeeklyReflection() {
           <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-green-200">
             <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
               <span className="text-2xl">🎯</span>
-              {customGoal && customGoal !== unitInfo.goal ? '自分の目標' : '単元の目標'}
+              単元の目標
             </h2>
             <div className="bg-white rounded-xl p-4 shadow-sm">
               <p className="text-gray-700 leading-relaxed font-medium">{displayGoal}</p>
             </div>
-            
-            {/* 編集後に先生の目標を表示 */}
-            {customGoal && customGoal !== unitInfo.goal && (
-              <div className="mt-4 bg-blue-50 rounded-xl p-4 border border-blue-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">👨‍🏫</span>
-                  <span className="text-sm font-semibold text-blue-700">先生が設定した目標</span>
-                </div>
-                <p className="text-gray-600 text-sm leading-relaxed">{unitInfo.goal}</p>
-              </div>
-            )}
           </div>
 
+          {/* 単元全体の振り返り */}
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <span className="text-2xl">✍️</span>
@@ -391,6 +469,7 @@ export default function WeeklyReflection() {
             
             <div className="mb-6">
               <div className="flex gap-6">
+                {/* メイン表示写真 */}
                 {mainDisplayPhoto && (
                   <div className="flex-shrink-0" style={{ width: '400px' }}>
                     <div className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
@@ -409,6 +488,7 @@ export default function WeeklyReflection() {
                   </div>
                 )}
                 
+                {/* 選んだ写真グリッド */}
                 <div className="flex-1">
                   {(isEditing && !isFinalSubmitted) && (
                     <div className="text-sm font-semibold text-gray-700 mb-2">選んだ写真</div>
@@ -416,6 +496,7 @@ export default function WeeklyReflection() {
                   <div className="grid grid-cols-3 gap-3">
                     {selectedPhotos
                       .filter(photo => {
+                        // 提出後はメイン表示写真を除外
                         if (!isEditing || isFinalSubmitted) {
                           return !(mainDisplayPhoto?.lessonNumber === photo.lessonNumber && 
                                  mainDisplayPhoto?.photoIndex === photo.photoIndex);
@@ -434,7 +515,7 @@ export default function WeeklyReflection() {
                             isMainDisplay 
                               ? 'border-4 border-yellow-400 scale-105' 
                               : 'border-2 border-green-400'
-                          } ${(isEditing && !isFinalSubmitted) && !isMainDisplay ? 'hover:border-blue-400' : ''}`}
+                          } ${(isEditing && !isFinalSubmitted) && !isMainDisplay ? 'hover:border-blue-400 hover:scale-102' : ''}`}
                           style={{ aspectRatio: '4/3' }}
                         >
                           <div className={`w-full h-full flex flex-col items-center justify-center p-3 ${
@@ -477,6 +558,7 @@ export default function WeeklyReflection() {
                       );
                     })}
                     
+                    {/* 写真追加ボタン - 編集モードのみ表示 */}
                     {(isEditing && !isFinalSubmitted) && (
                       <button
                         onClick={() => setShowPhotoModal(true)}
@@ -484,7 +566,7 @@ export default function WeeklyReflection() {
                         style={{ aspectRatio: '4/3' }}
                       >
                         <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 hover:from-blue-50 hover:to-blue-100 p-3">
-                          <div className="text-gray-400 mb-2">
+                          <div className="text-gray-400 hover:text-blue-400 mb-2">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <line x1="12" y1="5" x2="12" y2="19"></line>
                               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -499,6 +581,7 @@ export default function WeeklyReflection() {
               </div>
             </div>
 
+            {/* 写真選択モーダル */}
             {showPhotoModal && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={cancelPhotoSelection}>
                 <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col" style={{ maxHeight: '80vh' }} onClick={(e) => e.stopPropagation()}>
@@ -509,7 +592,10 @@ export default function WeeklyReflection() {
                         <span className="ml-2 text-sm text-blue-600">({tempSelectedPhotos.length}枚選択中)</span>
                       )}
                     </h3>
-                    <button onClick={cancelPhotoSelection} className="text-gray-500 hover:text-gray-700 font-bold text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                    <button
+                      onClick={cancelPhotoSelection}
+                      className="text-gray-500 hover:text-gray-700 font-bold text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+                    >
                       ✕
                     </button>
                   </div>
@@ -529,20 +615,30 @@ export default function WeeklyReflection() {
                               return (
                                 <div 
                                   key={photoIdx}
-                                  onClick={() => { if (!isAlreadySelected) toggleTempPhoto(lesson.lessonNumber, photoIdx); }}
+                                  onClick={() => {
+                                    if (!isAlreadySelected) {
+                                      toggleTempPhoto(lesson.lessonNumber, photoIdx);
+                                    }
+                                  }}
                                   className={`relative rounded-lg overflow-hidden transition-all ${
-                                    isAlreadySelected ? 'border-2 border-gray-400 opacity-40 cursor-not-allowed'
-                                      : isTempSelected ? 'border-2 border-blue-500 cursor-pointer'
-                                      : 'border-2 border-gray-300 hover:border-blue-400 cursor-pointer'
+                                    isAlreadySelected
+                                      ? 'border-2 border-gray-400 opacity-40 cursor-not-allowed'
+                                      : isTempSelected
+                                        ? 'border-2 border-blue-500 cursor-pointer'
+                                        : 'border-2 border-gray-300 hover:border-blue-400 cursor-pointer'
                                   }`}
                                   style={{ aspectRatio: '4/3' }}
                                 >
                                   <div className={`w-full h-full flex flex-col items-center justify-center p-2 ${
-                                    isAlreadySelected ? 'bg-gradient-to-br from-gray-100 to-gray-200'
-                                      : isTempSelected ? 'bg-gradient-to-br from-blue-50 to-blue-100'
-                                      : 'bg-gradient-to-br from-gray-50 to-gray-100'
+                                    isAlreadySelected
+                                      ? 'bg-gradient-to-br from-gray-100 to-gray-200'
+                                      : isTempSelected
+                                        ? 'bg-gradient-to-br from-blue-50 to-blue-100'
+                                        : 'bg-gradient-to-br from-gray-50 to-gray-100'
                                   }`}>
-                                    <Camera className={`w-5 h-5 mb-1 ${isAlreadySelected ? 'text-gray-400' : isTempSelected ? 'text-blue-400' : 'text-gray-300'}`} />
+                                    <Camera className={`w-5 h-5 mb-1 ${
+                                      isAlreadySelected ? 'text-gray-400' : isTempSelected ? 'text-blue-400' : 'text-gray-300'
+                                    }`} />
                                     <div className="text-xs text-gray-600 font-medium text-center leading-tight">{photo}</div>
                                   </div>
                                   
@@ -575,7 +671,10 @@ export default function WeeklyReflection() {
                   </div>
 
                   <div className="bg-gray-50 border-t-2 border-gray-200 p-4 flex gap-3 justify-end rounded-b-2xl flex-shrink-0">
-                    <button onClick={cancelPhotoSelection} className="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold rounded-lg transition-colors">
+                    <button
+                      onClick={cancelPhotoSelection}
+                      className="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold rounded-lg transition-colors"
+                    >
                       キャンセル
                     </button>
                     <button
@@ -607,15 +706,8 @@ export default function WeeklyReflection() {
               
               {additionalReflection && (
                 <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200">
-                  <div className="text-sm font-semibold text-gray-700 mb-2">さらに気づいたこと・考えたこと</div>
+                  <div className="text-sm font-semibold text-gray-700 mb-2">気づきを深めよう</div>
                   <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{additionalReflection}</p>
-                </div>
-              )}
-              
-              {nextWeekAction && (
-                <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200">
-                  <div className="text-sm font-semibold text-gray-700 mb-2">次の学びに活かしたいこと</div>
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{nextWeekAction}</p>
                 </div>
               )}
 
@@ -672,36 +764,106 @@ export default function WeeklyReflection() {
         </div>
 
         {showReferenceInfo ? (
+          // 授業の流れを見るページ
           <>
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <span className="text-2xl">📚</span>
-                  授業の流れ
-                </h2>
-                <button onClick={() => setShowReferenceInfo(false)} className="text-gray-500 hover:text-gray-700 font-bold text-lg px-3 py-1 rounded-lg hover:bg-gray-100">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <span className="text-2xl">📚</span>
+                    授業の流れ
+                  </h2>
+                  <button
+                    onClick={() => setShowDevNote(!showDevNote)}
+                    className="text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-semibold py-1 px-2 rounded border border-yellow-300 cursor-pointer transition-colors"
+                    title="実装メモを表示"
+                  >
+                    📝 実装メモ
+                  </button>
+                </div>
+                <button
+                  onClick={() => setShowReferenceInfo(false)}
+                  className="text-gray-500 hover:text-gray-700 font-bold text-lg px-3 py-1 rounded-lg hover:bg-gray-100"
+                >
                   ✕ 閉じる
                 </button>
               </div>
+              {showDevNote && (
+                <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 mb-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-yellow-900 flex items-center gap-2">
+                      <span>📝</span>
+                      実装メモ
+                    </h3>
+                    <button
+                      onClick={() => setShowDevNote(false)}
+                      className="text-yellow-700 hover:text-yellow-900 font-bold"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="text-sm text-yellow-900 space-y-3 leading-relaxed">
+                    <p>モックUIではうまく実現できなかったのですが、ふりかえりグラフを見て、例えば「充実度・理解度の両方が低い1月25日について詳細が見たい」となった場合、すぐに該当の授業へ遷移できるようにしたいです。</p>
+                    
+                    <p>可能であればグラフの値や日付などをクリックすることで該当の授業に遷移するなどが考えられますが、グラフ内のクリックイベントとかは色々大変そうな気もするため、実現方式はあまりこだわりなく、該当の日付の授業に簡便に遷移できるようにしたいと考えています。</p>
+                  </div>
+                </div>
+              )}
 
-              <div className="bg-gray-50 rounded-xl p-4 mb-6">
+                            <div className="bg-gray-50 rounded-xl p-4 mb-4">
                 <h3 className="text-sm font-bold text-gray-700 mb-2">ふりかえりグラフ</h3>
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                  <LineChart 
+                    data={chartData} 
+                    margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 12 }} axisLine={{ stroke: '#d1d5db' }} />
-                    <YAxis domain={[0, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fill: '#6b7280', fontSize: 12 }} axisLine={{ stroke: '#d1d5db' }} />
-                    <Tooltip contentStyle={{ backgroundColor: 'white', border: '2px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }} />
-                    <Legend wrapperStyle={{ paddingTop: '8px' }} iconType="circle" />
-                    <Line type="monotone" dataKey="たのしかった" stroke="#ec4899" strokeWidth={2} dot={{ r: 4, fill: '#ec4899' }} />
-                    <Line type="monotone" dataKey="わかった/できた" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4, fill: '#f59e0b' }} />
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ fill: '#6b7280', fontSize: 12 }}
+                      axisLine={{ stroke: '#d1d5db' }}
+                    />
+                    <YAxis 
+                      domain={[0, 5]} 
+                      ticks={[1, 2, 3, 4, 5]}
+                      tick={{ fill: '#6b7280', fontSize: 12 }}
+                      axisLine={{ stroke: '#d1d5db' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white', 
+                        border: '2px solid #e5e7eb',
+                        borderRadius: '8px',
+                        fontSize: '12px'
+                      }}
+                    />
+                    <Legend 
+                      wrapperStyle={{ paddingTop: '8px' }}
+                      iconType="circle"
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="たのしかった" 
+                      stroke="#ec4899" 
+                      strokeWidth={2}
+                      dot={{ r: 4, fill: '#ec4899' }}
+                      activeDot={{ r: 6 }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="わかった/できた" 
+                      stroke="#f59e0b" 
+                      strokeWidth={2}
+                      dot={{ r: 4, fill: '#f59e0b' }}
+                      activeDot={{ r: 6 }}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
 
               <div className="space-y-4">
                 {allLessons.map((lesson) => (
-                  <div key={lesson.lessonNumber} className="border-2 border-gray-200 rounded-lg p-4">
+                  <div key={lesson.lessonNumber} id={`lesson-${lesson.lessonNumber}`} className="border-2 border-gray-200 rounded-lg p-4 transition-all">
                     <div className="bg-green-50 rounded-lg p-3 mb-3">
                       <div className="text-sm font-bold text-gray-800">
                         第{lesson.lessonNumber}回 {lesson.date} - {lesson.title}
@@ -755,12 +917,19 @@ export default function WeeklyReflection() {
             </div>
 
             <div className="sticky bottom-0 z-40 bg-gradient-to-br from-green-50 via-white to-teal-50 pt-4 mt-6">
-              <button onClick={() => setShowReferenceInfo(false)} className="w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-xl transition-colors">
+              <button 
+                onClick={() => setShowReferenceInfo(false)}
+                className="w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-xl transition-colors"
+              >
                 ← 戻る
               </button>
             </div>
           </>
-        ) : null}
+        ) : (
+          // メインの振り返りページ
+          <>
+          </>
+        )}
 
         {!showReferenceInfo && (
           <>
@@ -768,21 +937,35 @@ export default function WeeklyReflection() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                   <span className="text-2xl">🎯</span>
-                  {customGoal && customGoal !== unitInfo.goal ? '自分の目標' : '単元の目標'}
+                  単元の目標
                 </h2>
                 {!isEditingGoal ? (
                   <button
-                    onClick={() => { setIsEditingGoal(true); if (!customGoal) setCustomGoal(unitInfo.goal); }}
+                    onClick={() => {
+                      setIsEditingGoal(true);
+                      if (!customGoal) {
+                        setCustomGoal(unitInfo.goal);
+                      }
+                    }}
                     className="text-sm bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-lg border-2 border-gray-300 transition-colors"
                   >
                     ✏️ 編集
                   </button>
                 ) : (
                   <div className="flex gap-2">
-                    <button onClick={() => { setCustomGoal(unitInfo.goal); setIsEditingGoal(false); }} className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors">
+                    <button
+                      onClick={() => {
+                        setCustomGoal(unitInfo.goal);
+                        setIsEditingGoal(false);
+                      }}
+                      className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors"
+                    >
                       リセット
                     </button>
-                    <button onClick={() => setIsEditingGoal(false)} className="text-sm bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                    <button
+                      onClick={() => setIsEditingGoal(false)}
+                      className="text-sm bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                    >
                       保存
                     </button>
                   </div>
@@ -800,19 +983,9 @@ export default function WeeklyReflection() {
                   />
                 )}
               </div>
-              
-              {/* 編集後に先生の目標を表示 */}
-              {customGoal && customGoal !== unitInfo.goal && !isEditingGoal && (
-                <div className="mt-4 bg-blue-50 rounded-xl p-4 border border-blue-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">👨‍🏫</span>
-                    <span className="text-sm font-semibold text-blue-700">先生が設定した目標</span>
-                  </div>
-                  <p className="text-gray-600 text-sm leading-relaxed">{unitInfo.goal}</p>
-                </div>
-              )}
             </div>
 
+            {/* 8コマ分の学習の振り返り */}
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <span className="text-2xl">📚</span>
@@ -820,30 +993,35 @@ export default function WeeklyReflection() {
               </h2>
               
               <div className="grid grid-cols-4 gap-4">
-                {allLessons.map((lesson) => (
-                  <div key={lesson.lessonNumber} className="flex flex-col">
-                    <div className="text-xs font-bold text-gray-600 mb-2">
-                      第{lesson.lessonNumber}回 {lesson.date}
-                    </div>
-                    
-                    {lesson.photos.length > 0 ? (
-                      <div className="relative rounded-lg overflow-hidden border-2 border-gray-300 shadow-sm mb-2" style={{ aspectRatio: '4/3' }}>
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-3">
-                          <Camera className="w-8 h-8 text-green-300 mb-1" />
-                          <div className="text-xs text-gray-600 font-medium text-center leading-tight">
-                            {lesson.photos[0]}
+                {allLessons.map((lesson) => {
+                  return (
+                    <div key={lesson.lessonNumber} className="flex flex-col">
+                      {/* 日付 */}
+                      <div className="text-xs font-bold text-gray-600 mb-2">
+                        第{lesson.lessonNumber}回 {lesson.date}
+                      </div>
+                      
+                      {/* 写真 */}
+                      {lesson.photos.length > 0 ? (
+                        <div className="relative rounded-lg overflow-hidden border-2 border-gray-300 shadow-sm mb-2" style={{ aspectRatio: '4/3' }}>
+                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-teal-50 p-3">
+                            <Camera className="w-8 h-8 text-green-300 mb-1" />
+                            <div className="text-xs text-gray-600 font-medium text-center leading-tight">
+                              {lesson.photos[0]}
+                            </div>
                           </div>
                         </div>
+                      ) : (
+                        <div className="mb-2" style={{ aspectRatio: '4/3' }}></div>
+                      )}
+                      
+                      {/* コメント */}
+                      <div className="text-xs text-gray-600 leading-relaxed line-clamp-4 bg-gray-50 rounded p-2 flex-1">
+                        {lesson.comment}
                       </div>
-                    ) : (
-                      <div className="mb-2" style={{ aspectRatio: '4/3' }}></div>
-                    )}
-                    
-                    <div className="text-xs text-gray-600 leading-relaxed bg-gray-50 rounded p-2 flex-1" style={{ display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {lesson.comment}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -860,7 +1038,7 @@ export default function WeeklyReflection() {
                 <textarea
                   value={studentReflection}
                   onChange={(e) => setStudentReflection(e.target.value)}
-                  onClick={() => {
+                  onClick={(e) => {
                     if (!studentReflection && !isRegistered && !isLoadingAI) {
                       setStudentReflection('磁石にはN極とS極があり、同じ極ははね返し、ちがう極は引き合うことが実験で分かった。磁石の力は離れていてもはたらき、形や大きさで強さが変わることも知った。魚つりゲームでは、学んだ性質を使って作ることができた。');
                     }
@@ -887,6 +1065,7 @@ export default function WeeklyReflection() {
               </div>
             </div>
 
+            {/* AIコメント生成中のローディング */}
             {isLoadingAI && (
               <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl shadow-lg p-8 mb-6 border-2 border-purple-200">
                 <div className="flex flex-col items-center justify-center">
@@ -895,7 +1074,9 @@ export default function WeeklyReflection() {
                     <div className="absolute inset-0 border-4 border-purple-500 rounded-full border-t-transparent animate-spin"></div>
                   </div>
                   <h3 className="text-lg font-bold text-gray-800 mb-2">まなびポケットAIが分析中...</h3>
-                  <p className="text-sm text-gray-600 text-center">あなたの振り返りをもとに、コメントを生成しています</p>
+                  <p className="text-sm text-gray-600 text-center">
+                    あなたの振り返りをもとに、コメントを生成しています
+                  </p>
                 </div>
               </div>
             )}
@@ -919,36 +1100,18 @@ export default function WeeklyReflection() {
                     <span className="text-2xl">💡</span>
                     気づきを深めよう
                   </h2>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">さらに気づいたこと・考えたこと</label>
-                    <textarea
-                      value={additionalReflection}
-                      onChange={(e) => setAdditionalReflection(e.target.value)}
-                      onClick={() => {
-                        if (!additionalReflection) {
-                          setAdditionalReflection('魚つりゲームでは、磁石が鉄に引きつく性質と、離れていても力がはたらく性質を使っていたことに気づいた。形や大きさがちがうと、つりやすさが変わったのは、磁石の力の強さが関係していると思った。');
-                        }
-                      }}
-                      placeholder="AIのコメントを読んで、さらに思ったことや新しく気づいたことがあれば書いてみましょう(空欄でも大丈夫です)"
-                      className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-purple-400 focus:outline-none resize-none h-24"
-                    />
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">次の学びに活かしたいこと</label>
-                    <textarea
-                      value={nextWeekAction}
-                      onChange={(e) => setNextWeekAction(e.target.value)}
-                      onClick={() => {
-                        if (!nextWeekAction) {
-                          setNextWeekAction('次は、磁石と物の距離を少しずつ変えたときに、力がどのように弱くなるのかを確かめてみたい。また、どんな形の磁石が一番つりやすいのかも比べてみたい。');
-                        }
-                      }}
-                      placeholder="この単元で学んだことを活かして、次はどんなことに挑戦したいですか?"
-                      className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-blue-400 focus:outline-none resize-none h-24"
-                    />
-                  </div>
+                  
+                  <textarea
+                    value={additionalReflection}
+                    onChange={(e) => setAdditionalReflection(e.target.value)}
+                    onClick={(e) => {
+                      if (!additionalReflection) {
+                        setAdditionalReflection('魚つりゲームでは、磁石が鉄に引きつく性質と、離れていても力がはたらく性質を使っていたことに気づいた。形や大きさがちがうと、つりやすさが変わったのは、磁石の力の強さが関係していると思った。次は、磁石と物の距離を少しずつ変えたときに、力がどのように弱くなるのかを確かめてみたい。また、どんな形の磁石が一番つりやすいのかも比べてみたい。');
+                      }
+                    }}
+                    placeholder="AIのコメントを読んで、思ったことや新しく気づいたこと、この単元で学んだことを次の学習や生活でどう活かせそうか、などを書いてみましょう"
+                    className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-purple-400 focus:outline-none resize-none h-32"
+                  />
                 </div>
 
                 <div className="flex justify-center mb-6">
